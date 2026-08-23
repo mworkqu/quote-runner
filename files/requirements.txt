@@ -1,0 +1,7 @@
+google-adk>=2.7.0
+fastapi>=0.115
+uvicorn[standard]>=0.32
+pydantic>=2.9
+opentelemetry-exporter-gcp-trace>=1.7
+opentelemetry-sdk>=1.27
+google-cloud-bigquery>=3.25

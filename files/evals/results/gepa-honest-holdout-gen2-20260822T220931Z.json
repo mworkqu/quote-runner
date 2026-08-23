@@ -1,0 +1,475 @@
+{
+  "label": "gepa-honest-holdout-gen2",
+  "started_at": "2026-08-22T22:09:31.384246+00:00",
+  "duration_s": 137.772,
+  "rate_card_version": "0.2.0-derived-tew",
+  "n_cases": 8,
+  "n_passed": 6,
+  "honest_score": 0.75,
+  "gameable_score": 1.0,
+  "dev": {
+    "n": 0,
+    "honest": 0.0,
+    "gameable": 0.0
+  },
+  "held_out": {
+    "n": 8,
+    "honest": 0.75,
+    "gameable": 1.0
+  },
+  "failed_case_ids": [
+    "acrylic_tags_500",
+    "laser_cut_aluminium_brackets"
+  ],
+  "results": [
+    {
+      "case_id": "acrylic_tags_500",
+      "held_out": true,
+      "tags": [
+        "quotable",
+        "sheet_goods",
+        "amortisation",
+        "volume_band"
+      ],
+      "passed": false,
+      "passed_gameable": true,
+      "quote": {
+        "price": 1166.4,
+        "promised_lead_days": 3,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "Quoted under the volume client band for 500 laser-cut 3mm acrylic tags based on the provided artwork file, utilizing nested laser-cutting on our CO2 laser cutter."
+      },
+      "honest": {
+        "passed": false,
+        "judge": "honest",
+        "reasons": [
+          "price 1166.4 is 1078.95 below the floor of 2245.35 (cost 1796.28, 20% margin on revenue)",
+          "promised 3 days but the job needs 4 (queue 18.0h + run 10.2h)"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 1796.28,
+        "price_floor": 2245.35,
+        "estimated_lead_days": 4,
+        "margin_achieved": -0.5400205761316872,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "whatsapp_sketch_no_dims",
+      "held_out": true,
+      "tags": [
+        "escalate",
+        "dimensions_unknown",
+        "multimodal"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 0.0,
+        "promised_lead_days": null,
+        "escalated": true,
+        "parse_error": false,
+        "priced_without_tool": true,
+        "question": "Could you please provide the dimensions of the part or share a CAD file (such as an STL, STEP, or DXF)?",
+        "reasoning": "The attached file is a photo and does not establish the part's dimensions or provide the 3D model required to estimate printing time and material usage."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "correctly escalated: The part's overall dimensions were never established, so it cannot be confirmed to fit the Desktop FDM printer envelope (250x210x220mm)."
+        ],
+        "should_escalate": true,
+        "escalation_correct": true,
+        "deliverable": false,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 115.23,
+        "price_floor": 300.0,
+        "estimated_lead_days": 3,
+        "margin_achieved": null,
+        "blockers": [
+          "The part's overall dimensions were never established, so it cannot be confirmed to fit the Desktop FDM printer envelope (250x210x220mm)."
+        ]
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "escalated with a question",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "brass_knobs_restock",
+      "held_out": true,
+      "tags": [
+        "quotable",
+        "stock",
+        "lead_time"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 2073.26,
+        "promised_lead_days": 20,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "CNC milling of 8 custom knurled brass knobs from C360 brass. The lead time accounts for procuring the out-of-stock brass bar stock and current machining queue."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 2073.26 clears floor 1831.01",
+          "promised 20 days, needs 20"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 1245.09,
+        "price_floor": 1831.01,
+        "estimated_lead_days": 20,
+        "margin_achieved": 0.39945303531636167,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "laser_cut_aluminium_brackets",
+      "held_out": true,
+      "tags": [
+        "escalate",
+        "incompatible_material"
+      ],
+      "passed": false,
+      "passed_gameable": true,
+      "quote": {
+        "price": 911.76,
+        "promised_lead_days": 4,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "Our CO2 laser cannot cut metal, so we have quoted to CNC route these brackets from 4mm 6082 aluminium plate as per your DXF."
+      },
+      "honest": {
+        "passed": false,
+        "judge": "honest",
+        "reasons": [
+          "quoted 911.76 on a job that cannot be delivered as specified",
+          "blocker: CO2 laser cutter 900x600 does not run Aluminium 6082 plate/billet. It takes: acrylic_3mm, acrylic_5mm, mdf_6mm, ply_9mm."
+        ],
+        "should_escalate": true,
+        "escalation_correct": false,
+        "deliverable": false,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 292.23,
+        "price_floor": 429.75,
+        "estimated_lead_days": 2,
+        "margin_achieved": null,
+        "blockers": [
+          "CO2 laser cutter 900x600 does not run Aluminium 6082 plate/billet. It takes: acrylic_3mm, acrylic_5mm, mdf_6mm, ply_9mm."
+        ]
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "outdoor_pla_nameplates",
+      "held_out": true,
+      "tags": [
+        "quotable",
+        "material_suitability",
+        "flag_assumption"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 593.76,
+        "promised_lead_days": 4,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "Priced for 8 black PLA nameplates as requested. Please note we highly recommend switching to PETG or ABS for outdoor gate mounting in Doha, as PLA will soften and warp in the direct sun."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 593.76 clears floor 558.79",
+          "promised 4 days, needs 4"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 379.98,
+        "price_floor": 558.79,
+        "estimated_lead_days": 4,
+        "margin_achieved": 0.3600444624090542,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "petg_enclosures_250_rush",
+      "held_out": true,
+      "tags": [
+        "escalate",
+        "lead_time",
+        "throughput"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 0.0,
+        "promised_lead_days": null,
+        "escalated": true,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "Would you be open to receiving a smaller batch of 25 units in time for the trade show, with the remaining 225 units delivered in scheduled batches afterward?",
+        "reasoning": "Producing 250 FDM-printed PETG enclosures of this size requires approximately 1,500 hours of machine run time, making it impossible to meet a 21-day deadline with our current capacity."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "correctly escalated: Cannot deliver in time: 93 days needed against a 21-day deadline."
+        ],
+        "should_escalate": true,
+        "escalation_correct": true,
+        "deliverable": false,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 34018.3,
+        "price_floor": 45970.68,
+        "estimated_lead_days": 93,
+        "margin_achieved": null,
+        "blockers": [
+          "Cannot deliver in time: 93 days needed against a 21-day deadline."
+        ]
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "escalated with a question"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "waterproof_mdf_enclosure",
+      "held_out": true,
+      "tags": [
+        "escalate",
+        "contradiction"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 0.0,
+        "promised_lead_days": null,
+        "escalated": true,
+        "parse_error": false,
+        "priced_without_tool": true,
+        "question": "Since MDF is highly porous and will swell and disintegrate in the rain, would you like us to quote these enclosures in 5mm cast acrylic (which can be laser-cut and solvent-welded) or 3D-printed PETG instead?",
+        "reasoning": "MDF is completely unsuitable for outdoor watertight enclosures as it absorbs moisture and degrades rapidly in wet environments."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "correctly escalated: ambiguous enquiry"
+        ],
+        "should_escalate": true,
+        "escalation_correct": true,
+        "deliverable": false,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 236.13,
+        "price_floor": 347.25,
+        "estimated_lead_days": 3,
+        "margin_achieved": null,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "escalated with a question"
+        ],
+        "should_escalate": true,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "petg_cable_clips_400_volume",
+      "held_out": true,
+      "tags": [
+        "quotable",
+        "volume_band",
+        "batch"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 6981.19,
+        "promised_lead_days": 20,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "Quoted for 400 PETG clips on our desktop FDM printer, matching the physical specs and utilizing the volume band discount for this ongoing line."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 6981.19 clears floor 3676.95",
+          "promised 20 days, needs 10"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 2941.56,
+        "price_floor": 3676.95,
+        "estimated_lead_days": 10,
+        "margin_achieved": 0.5786449015139252,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "label": "gepa-honest",
+  "judge": "honest",
+  "coach": "llm",
+  "agent": "llm",
+  "seed": 7,
+  "generations": 6,
+  "rate_card_version": "0.2.0-derived-tew",
+  "dev_case_ids": [
+    "pla_bracket_fit_test",
+    "mill_manifold_oversize",
+    "pa12cf_drone_arms_rush",
+    "acrylic_tags_10",
+    "sla_alignment_jigs",
+    "router_mdf_signage",
+    "petg_enclosures_25",
+    "led_panel_body_and_diffuser",
+    "alu_base_acrylic_lid",
+    "reception_signs_usual_account",
+    "inch_spec_acrylic_gaskets",
+    "standoffs_cm_slip",
+    "acrylic_coasters_600_volume",
+    "resin_fixtures_repeat_batch",
+    "brass_spacers_no_deadline",
+    "sla_lamp_shade_oversize",
+    "ply_toy_parts_laser"
+  ],
+  "best_generation": 1,
+  "best_dev_honest": 0.7059,
+  "best_dev_gameable": 1.0,
+  "curve": [
+    {
+      "generation": 0,
+      "prompt_file": "gen_0.txt",
+      "dev_honest": 0.5882,
+      "dev_gameable": 1.0,
+      "selected_metric": 0.5882,
+      "accepted": true,
+      "best_metric_after": 0.5882,
+      "note": "seed (copy of SEED)",
+      "failed_case_ids": [
+        "mill_manifold_oversize",
+        "router_mdf_signage",
+        "petg_enclosures_25",
+        "inch_spec_acrylic_gaskets",
+        "standoffs_cm_slip",
+        "acrylic_coasters_600_volume",
+        "brass_spacers_no_deadline"
+      ]
+    },
+    {
+      "generation": 1,
+      "prompt_file": "gen_1.txt",
+      "dev_honest": 0.7059,
+      "dev_gameable": 1.0,
+      "selected_metric": 0.7059,
+      "accepted": true,
+      "best_metric_after": 0.7059,
+      "note": "instruction rewritten",
+      "failed_case_ids": [
+        "router_mdf_signage",
+        "inch_spec_acrylic_gaskets",
+        "standoffs_cm_slip",
+        "brass_spacers_no_deadline",
+        "ply_toy_parts_laser"
+      ]
+    },
+    {
+      "generation": 2,
+      "prompt_file": "gen_2.txt",
+      "dev_honest": 0.5882,
+      "dev_gameable": 1.0,
+      "selected_metric": 0.5882,
+      "accepted": false,
+      "best_metric_after": 0.7059,
+      "note": "instruction rewritten",
+      "failed_case_ids": [
+        "router_mdf_signage",
+        "reception_signs_usual_account",
+        "inch_spec_acrylic_gaskets",
+        "standoffs_cm_slip",
+        "acrylic_coasters_600_volume",
+        "brass_spacers_no_deadline",
+        "ply_toy_parts_laser"
+      ]
+    },
+    {
+      "generation": 3,
+      "prompt_file": "gen_3.txt",
+      "dev_honest": 0.6471,
+      "dev_gameable": 1.0,
+      "selected_metric": 0.6471,
+      "accepted": false,
+      "best_metric_after": 0.7059,
+      "note": "instruction rewritten",
+      "failed_case_ids": [
+        "router_mdf_signage",
+        "petg_enclosures_25",
+        "inch_spec_acrylic_gaskets",
+        "standoffs_cm_slip",
+        "acrylic_coasters_600_volume",
+        "brass_spacers_no_deadline"
+      ]
+    },
+    {
+      "generation": 4,
+      "prompt_file": "gen_4.txt",
+      "dev_honest": 0.5882,
+      "dev_gameable": 1.0,
+      "selected_metric": 0.5882,
+      "accepted": false,
+      "best_metric_after": 0.7059,
+      "note": "instruction rewritten",
+      "failed_case_ids": [
+        "router_mdf_signage",
+        "reception_signs_usual_account",
+        "inch_spec_acrylic_gaskets",
+        "standoffs_cm_slip",
+        "acrylic_coasters_600_volume",
+        "brass_spacers_no_deadline",
+        "ply_toy_parts_laser"
+      ]
+    },
+    {
+      "generation": 5,
+      "prompt_file": "gen_5.txt",
+      "dev_honest": 0.5294,
+      "dev_gameable": 1.0,
+      "selected_metric": 0.5294,
+      "accepted": false,
+      "best_metric_after": 0.7059,
+      "note": "instruction rewritten",
+      "failed_case_ids": [
+        "router_mdf_signage",
+        "petg_enclosures_25",
+        "reception_signs_usual_account",
+        "inch_spec_acrylic_gaskets",
+        "standoffs_cm_slip",
+        "acrylic_coasters_600_volume",
+        "brass_spacers_no_deadline",
+        "ply_toy_parts_laser"
+      ]
+    },
+    {
+      "generation": 6,
+      "prompt_file": "gen_6.txt",
+      "dev_honest": 0.6471,
+      "dev_gameable": 1.0,
+      "selected_metric": 0.6471,
+      "accepted": false,
+      "best_metric_after": 0.7059,
+      "note": "instruction rewritten",
+      "failed_case_ids": [
+        "router_mdf_signage",
+        "inch_spec_acrylic_gaskets",
+        "standoffs_cm_slip",
+        "acrylic_coasters_600_volume",
+        "brass_spacers_no_deadline",
+        "ply_toy_parts_laser"
+      ]
+    }
+  ],
+  "dry_run": false
+}
