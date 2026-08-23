@@ -188,44 +188,69 @@ Then the honest headline, using the wording from Part 2.
 
 ### Shot 5 — runs on Google Cloud (35s)
 
-**Prerequisite — do this before recording:**
+**Filmed entirely in the Cloud Console.** No local terminal, no curl, no live
+model call that can fail while you are recording.
+
+**Why this changed.** The service deployed and reports `Ready`, but the
+organisation enforces Domain Restricted Sharing
+(`constraints/iam.allowedPolicyMemberDomains`), so `allUsers` cannot be granted
+`roles/run.invoker` and the public URL refuses unauthenticated requests. That is
+an org policy, not a defect in the build — and the Console shows the same facts
+without the fight. Do not burn recording time on it.
+
+**Already done, nothing to run:**
+
+- deployed revision `quote-runner-00001-wnf`, region `us-central1`
+- env vars carry `GOOGLE_CLOUD_LOCATION=global`, because `gemini-3.5-flash` is
+  served on the *global* publisher endpoint; a regional call 404s
+
+**On camera — three Console pages, in this order:**
+
+1. **Cloud Run → quote-runner.** Revision, region, image digest, then open the
+   env vars panel: `GOOGLE_GENAI_USE_VERTEXAI TRUE`, `QR_MODEL gemini-3.5-flash`,
+   `GOOGLE_CLOUD_LOCATION global`. Your strongest single frame.
+2. **APIs & Services → Vertex AI API → Metrics.** Real request traffic from both
+   GEPA runs. This is the page that proves Gemini 3.5 on Vertex did real work —
+   sustained usage, not one demo call.
+3. **Cloud Build → History.** The container image built from this source.
+
+> "Gemini 3.5 Flash on Vertex AI, an ADK agent, containerised and deployed to
+> Cloud Run. The traffic on that metrics page *is* the optimisation run you just
+> watched — every generation, every case, billed to this project."
+
+**Check before you script it:** Cloud Trace is probably **empty**. Tracing only
+initialises inside `server.py` on Cloud Run, and no request ever reached that
+container; the GEPA runs ran locally and exported no spans. Open Cloud Trace
+first — if it is blank, leave it out. The Vertex AI metrics page carries this
+shot on its own.
+
+**Shots 2–4 can be filmed in the same window.** Cloud Shell is part of the
+Console, so the whole video can be one continuous browser recording:
 
 ```bash
-export GOOGLE_CLOUD_PROJECT=your-project
-export GOOGLE_CLOUD_LOCATION=us-central1
-export GOOGLE_GENAI_USE_VERTEXAI=TRUE
-gcloud auth application-default login
-python3 scripts/verify_vertex.py     # must pass all 5
-./deploy.sh your-project us-central1
+cd ~/quote-runner && git pull && cd files
+python3 scripts/show_divergence.py      # shot 2
+sed -n '47,72p' agent/tools.py          # shot 3
+cat gepa/prompts/honest/gen_2.txt       # shot 4
+python3 -m evals.harness --validate     # supporting: the cases are honest
 ```
 
-Then on camera, with the Cloud Trace console open in a second window:
-
-```bash
-curl -s $URL/healthz | python3 -m json.tool
-curl -s -X POST $URL/eval | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["n_passed"], "/", d["n_cases"], "=", d["honest_score"])'
-```
-
-> "Same agent object, same judge, same 25 cases — locally, inside the
-> optimisation loop, and behind Cloud Run. There is no eval-only code path, so
-> there's no chance of scoring something other than what ships."
-
-Let Cloud Trace fill up in the background while `/eval` runs. That is the shot.
+All four read saved results only — no Vertex spend, nothing that can fail live.
 
 ---
 
 ## Part 4 — Your task list, in order
 
 1. **Clean the two directories** (commands in Part 3, before you start).
-2. **Deploy to Cloud Run.** The only unfinished technical work. Run
-   `verify_vertex.py` first — it fails fast on the two things that eat a
-   weekend, wrong model id and broken function calling.
+2. **Deploy to Cloud Run — done.** Revision `quote-runner-00001-wnf` is live.
+   The public URL is blocked by org-level Domain Restricted Sharing; shot 5 uses
+   the Console instead and loses nothing. Do not reopen this.
 3. **Read the 15 newer eval cases.** You're the only person who can say whether
    a 210-minute PETG enclosure matches your machines. The oracle proves they're
    *consistent*, not that they're *real*.
 4. **Record shots 2, 3 and 4 first** — they need no cloud credentials and no
    network. If the deploy fights you, you still have three quarters of a video.
-5. **Record shot 5 last**, once the URL is live.
+5. **Record shot 5 last**, from the Console — no URL required.
 6. **Update the devpost.** The "Challenges" and "What we learned" sections
    should now carry the noise finding and the caught overfit. Both are more
    interesting than a clean win, and both are already written up in the README's
