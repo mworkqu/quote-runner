@@ -37,4 +37,4 @@ echo "Deployed: $URL"
 # container, so it can never serve as a smoke test. POST /quote proves more anyway:
 # it exercises Vertex, the ADK tool loop and the costing engine in a single call.
 echo "Smoke test:  curl -s -X POST $URL/quote -H \"Authorization: Bearer \$(gcloud auth print-identity-token)\" -H 'Content-Type: application/json' -d '{\"enquiry\":\"One PLA mounting bracket, 120x60x35mm, no rush. What would that cost?\",\"attachments\":[]}' | python3 -m json.tool"
-echo "Full eval:   curl -s -X POST $URL/eval | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d[\"n_passed\"], \"/\", d[\"n_cases\"])'"
+echo "Full eval:   curl -s -X POST $URL/eval -H \"Authorization: Bearer \$(gcloud auth print-identity-token)\" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d[\"n_passed\"], \"/\", d[\"n_cases\"])'"

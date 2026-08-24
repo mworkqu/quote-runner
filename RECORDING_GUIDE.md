@@ -166,7 +166,7 @@ python3 test_costing.py
 Side-by-side diff on screen:
 
 ```bash
-diff -u files/gepa/prompts/gen_0.txt files/gepa/prompts/honest/gen_2.txt
+diff -u gepa/prompts/gen_0.txt gepa/prompts/honest/gen_2.txt
 ```
 
 > "Nobody wrote these rules. The coach only ever sees the enquiry, what the
