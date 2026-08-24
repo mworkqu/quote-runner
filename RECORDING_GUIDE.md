@@ -12,11 +12,12 @@ is no code left to write before you record.
 | `evals/` — 25 cases, 8 held out, oracle + harness | done, oracle 100% |
 | `agent/` — ADK agent, tools, seed prompt | done |
 | `gepa/` — coach, loop, both judges | done, both real runs complete |
-| `server.py` — `/healthz`, `/quote`, `/eval` | written, **not yet deployed** |
+| `server.py` — `/healthz`, `/quote`, `/eval` | deployed, revision `quote-runner-00001-wnf` live |
 | `scripts/load_results.py`, `gepa_curve.sql` | done, dry-run verified |
 
-**The only thing not done is the Cloud Run deploy.** That is your one remaining
-technical task and it is the "runs on Google Cloud" evidence.
+**The Cloud Run deploy is done.** Revision `quote-runner-00001-wnf` serves 100%
+of traffic in `us-central1` and answers real enquiries — that is your "runs on
+Google Cloud" evidence, already in hand.
 
 ### The numbers you have
 

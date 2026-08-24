@@ -110,9 +110,13 @@ crashing the trace.
 
 ## Next
 
-Author the 25 cases against these structures — each case is a ground-truth
-`Job` plus the enquiry text the agent sees. Hold 8 back for validation and never
-optimise against them.
+All 25 cases are authored and 8 are held out — see *Eval set* below. What is
+actually next is the judge. `honest_judge` is flat above the floor, so the
+optimiser learned to sit exactly on it: the deployed service prices at the floor
+and promises the bare lead time, leaving no cushion for estimation error. A judge
+that rewarded margin captured above the floor, rather than only clearing it, would
+produce a different agent — and would invalidate every number here, which is why
+it is next and not now.
 
 ## Eval set
 
