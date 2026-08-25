@@ -1044,10 +1044,13 @@ CASE_BRASS_SPACERS = Case(
         "because the rate card carried no lathe. It is turning work — the client "
         "says 'turned' and gives a diameter — and 'a few cross-holes' is a second "
         "setup. It is now split: 22 min turning on lathe_01, then 8 min "
-        "cross-drilling on mill_01. The split preserves the 30 minutes of total "
-        "machine time per unit, so it changes the process model and not the "
-        "answer. Material sits on the turning operation only so it is not "
-        "double-counted."
+        "cross-drilling on mill_01. Total machine minutes per unit are preserved "
+        "at 30 (22 turning + 8 cross-drilling). Cost rose from 1150.92 to "
+        "1202.12, because setup_minutes is charged per operation: two setups "
+        "cost 30 + 45 against the old single 45. Lead time is unchanged at 20 "
+        "days, once queue is treated as a single job-level delay rather than "
+        "summed across machines. Material sits on the turning operation only so "
+        "it is not double-counted."
     ),
 )
 

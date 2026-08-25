@@ -15,7 +15,7 @@ costing/
 scripts/
   derive_rate_card.py   the workshop cost model rate_card.json is generated from
 demo.py             four worked cases + the reward-hacking contrast
-test_costing.py     15 golden tests
+test_costing.py     16 golden tests
 ```
 
 ```bash

@@ -7,7 +7,7 @@ is no code left to write before you record.
 
 | Piece | State |
 |---|---|
-| `costing/` — engine, feasibility, judges, tool surface | done, 15/15 golden tests |
+| `costing/` — engine, feasibility, judges, tool surface | done, 16/16 golden tests |
 | `costing/rate_card.json` | derived from your workshop cost model, not guessed |
 | `evals/` — 25 cases, 8 held out, oracle + harness | done, oracle 100% |
 | `agent/` — ADK agent, tools, seed prompt | done |
@@ -155,7 +155,7 @@ Then run the tests:
 python3 test_costing.py
 ```
 
-> "Fifteen tests. One of them asserts that this function never grows a price
+> "Sixteen tests. One of them asserts that this function never grows a price
 > argument. Another asserts margin is computed on revenue, not as markup on
 > cost — which is the exact error we found in our own workshop's spreadsheet."
 

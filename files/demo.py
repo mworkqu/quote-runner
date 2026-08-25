@@ -244,7 +244,7 @@ def main(argv: list[str]) -> int:
     print(wrap(
         "These five are five of the 25 cases in evals/cases.py. Run "
         "`python3 -m evals.harness --validate` to check the set is well-authored, "
-        "and `python3 test_costing.py` for the 15 golden tests.",
+        "and `python3 test_costing.py` for the 16 golden tests.",
         indent="  ", width=74,
     ))
     print()
