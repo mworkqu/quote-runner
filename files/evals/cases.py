@@ -693,7 +693,7 @@ CASE_CM_STANDOFFS = Case(
                 machine_id="fdm_01",
                 material_id="pla",
                 machine_minutes_per_unit=8,
-                material_grams_per_unit=5,
+                material_grams_per_unit=0.40,
                 cad_minutes=15,
                 part_bbox_mm=[6, 6, 12],
                 label="standoff",
@@ -709,7 +709,16 @@ CASE_CM_STANDOFFS = Case(
         "that disambiguates. An agent that takes the first number and unit it "
         "sees builds a part ten times too big — which on a mass-priced FDM part "
         "over-quotes the material and, if it were on a sheet machine, would blow "
-        "the nest. The self-correction is a gift the agent has to actually read."
+        "the nest. The self-correction is a gift the agent has to actually read. "
+        "GROUND TRUTH FIX: material_grams_per_unit was 5.0, which is the solid "
+        "mass of 60 x 6 x 12mm — the part with one dimension left in the client's "
+        "mistaken cm reading. The case tests whether the agent reads the "
+        "self-correction, and the ground truth itself did not. 0.40g is the "
+        "corrected 6 x 6 x 12mm part: 0.432 cm3 solid at 1.24 g/cm3, less an M3 "
+        "clearance through-hole for the fastener. The number is derived from that "
+        "geometry and nothing else. It drops the price floor to the 300.00 minimum "
+        "job value, so this is now a minimum-job-value case — that is a fact about "
+        "the eval set, not a reason to pick a different mass."
     ),
 )
 

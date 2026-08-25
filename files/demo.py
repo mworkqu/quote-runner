@@ -32,6 +32,8 @@ from evals.cases import (
     Case,
 )
 
+sys.stdout.reconfigure(encoding="utf-8")  # RULE is U+2500; Windows consoles default to cp1252
+
 CARD = RateCard.load()
 RULE = "─" * 78
 
