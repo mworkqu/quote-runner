@@ -142,7 +142,6 @@ def check_feasibility(job: Job, card: RateCard | None = None) -> Feasibility:
     run_hours = Decimal("0")
     post_hours = Decimal("0")
     qty = D(job.quantity)
-    seen_machines: set[str] = set()
 
     for op in job.operations:
         machine = card.machine(op.machine_id)
@@ -188,11 +187,13 @@ def check_feasibility(job: Job, card: RateCard | None = None) -> Feasibility:
             procurement_days = max(procurement_days, material.restock_lead_days)
 
         # -- 4. time --------------------------------------------------------
-        # Queue is per machine, counted once: two operations on the same
-        # machine wait in the same queue, they do not wait twice.
-        if machine.id not in seen_machines:
-            seen_machines.add(machine.id)
-            queue_hours += machine.queue_hours
+        # Queue is a single job-level delay: the job waits once, for the
+        # longest queue it touches. Machine backlogs drain in parallel —
+        # while a job waits 44h for the lathe, the mill's queue is draining
+        # too, so by the time turning finishes the mill is free. Summing
+        # treats concurrent waits as sequential and overstates lead time on
+        # every multi-operation job.
+        queue_hours = max(queue_hours, machine.queue_hours)
 
         run_hours += (machine.setup_minutes + op.machine_minutes_per_unit * qty) / _HOUR
         post_hours += (

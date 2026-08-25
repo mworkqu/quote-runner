@@ -374,7 +374,7 @@ CASE_BRASS_KNOBS = Case(
         8,
         [
             dict(
-                machine_id="mill_01",
+                machine_id="lathe_01",
                 material_id="brass_360",
                 machine_minutes_per_unit=38,
                 material_grams_per_unit=420,
@@ -396,7 +396,12 @@ CASE_BRASS_KNOBS = Case(
         "The failure mode this catches is an agent that has learned 'not in "
         "stock' as a blocker pattern and escalates on the keyword. It must "
         "quote, and it must promise ~20 days rather than the 7 it would like "
-        "to promise. Held out as the honest-lead-time check."
+        "to promise. Held out as the honest-lead-time check.\n\n"
+        "PROCESS FIX: this operation was originally assigned to mill_01, because "
+        "the rate card carried no lathe. It is turning work — a knurled 45mm "
+        "diameter knob with no flats is a single lathe operation — so it now runs "
+        "on lathe_01. Machine minutes, material, labour and bbox are unchanged; "
+        "only the machine changed."
     ),
 )
 
@@ -1004,15 +1009,24 @@ CASE_BRASS_SPACERS = Case(
         12,
         [
             dict(
-                machine_id="mill_01",
+                machine_id="lathe_01",
                 material_id="brass_360",
-                machine_minutes_per_unit=30,
+                machine_minutes_per_unit=22,
                 material_grams_per_unit=140,
                 cad_minutes=30,
                 operator_minutes_per_unit=8,
+                part_bbox_mm=[25, 25, 40],
+                label="brass spacer (turning)",
+            ),
+            dict(
+                machine_id="mill_01",
+                material_id="brass_360",
+                machine_minutes_per_unit=8,
+                material_grams_per_unit=0,
+                cad_minutes=0,
                 finishing_minutes_per_unit=6,
                 part_bbox_mm=[25, 25, 40],
-                label="brass spacer",
+                label="brass spacer (cross-drilling)",
             )
         ],
     ),
@@ -1025,7 +1039,15 @@ CASE_BRASS_SPACERS = Case(
         "before the queue even starts. Its job in the dev set is to let an "
         "optimiser LEARN that 'not in stock' is a date, not a refusal — the "
         "lesson brass_knobs then checks under held-out conditions. An agent that "
-        "escalates on the keyword 'material comes in' fails a perfectly good job."
+        "escalates on the keyword 'material comes in' fails a perfectly good job.\n\n"
+        "PROCESS FIX: this was originally a single 30-minute mill_01 operation, "
+        "because the rate card carried no lathe. It is turning work — the client "
+        "says 'turned' and gives a diameter — and 'a few cross-holes' is a second "
+        "setup. It is now split: 22 min turning on lathe_01, then 8 min "
+        "cross-drilling on mill_01. The split preserves the 30 minutes of total "
+        "machine time per unit, so it changes the process model and not the "
+        "answer. Material sits on the turning operation only so it is not "
+        "double-counted."
     ),
 )
 

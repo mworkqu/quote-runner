@@ -61,6 +61,8 @@ import sys
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 
+sys.stdout.reconfigure(encoding="utf-8")  # rules are U+2500; Windows consoles default to cp1252
+
 CARD_PATH = Path(__file__).resolve().parent.parent / "costing" / "rate_card.json"
 
 D = Decimal
@@ -86,7 +88,7 @@ PER_HEAD_MONTHLY = D("300")  # iqama 1200 + ticket 1200 + PPE 400 + medical 800,
 UTILISATION = D("0.65")
 
 CURRENCY = "QAR"
-CARD_VERSION = "0.2.0-derived-tew"
+CARD_VERSION = "0.3.0-derived-tew"
 
 
 def staff_monthly_cost(salary: Decimal) -> Decimal:
@@ -252,6 +254,11 @@ DIVISIONS = {
     },
     "machining": {
         "name": "CNC machining",
+        # Stays 1.00 with two machines. Concurrency is how many jobs the
+        # division can genuinely progress at once, and that is bounded by the
+        # machinist, not the machine count: one machinist still sells 135.2
+        # hrs/month whether he has one machine or two. Raising it would cut
+        # the shared cost per hour and change every rate in the division.
         "concurrency": D("1"),
         "staff": {
             "CNC programmer / operator": D("3000"),
@@ -269,6 +276,35 @@ DIVISIONS = {
                 "envelope_mm": [300, 200, 150],
                 "materials": ["alu_6082", "brass_360", "acrylic_5mm"],
                 "extra_assets": {"Tooling & metrology": (D("25000"), D("5"))},
+            },
+            # The shop's CNC lathe. Absent from the card until now, which forced
+            # every turning job onto mill_01 — brass_knobs_restock and
+            # brass_spacers_no_deadline, whose client says "turned" and "diameter"
+            # outright. Costing turning as milling is a process error, not a
+            # rounding error.
+            "lathe_01": {
+                "name": "CNC turning centre",
+                "process": "cnc_turn",
+                # Owner's figure for the replacement cost of the actual machine.
+                "replacement_value": D("200000"),
+                # Matches mill_01; ten years is standard for CNC metal machinery.
+                "life_years": D("10"),
+                # Owner's figure. Attended running only — unlike the printers,
+                # this machine does not run unmanned overnight.
+                "hours_per_day": D("8"),
+                # A lathe chucks faster than a mill fixtures. mill_01 is 45.
+                "setup_minutes": 30,
+                # Same division, same operators, same demand as mill_01, so the
+                # queue standing in front of it is the same 44 hours.
+                "queue_hours": 44,
+                # Clears both turning cases with room: brass_knobs_restock is
+                # Ø45 x 30 and brass_spacers_no_deadline is Ø25 x 40.
+                "envelope_mm": [300, 300, 500],
+                "materials": ["alu_6082", "brass_360"],
+                # Chuck, collets, insert holders, knurling tool. Lower than
+                # mill_01's 25000 because metrology is already carried on that
+                # machine and is not duplicated here.
+                "extra_assets": {"Turning tooling & workholding": (D("15000"), D("5"))},
             },
         },
     },

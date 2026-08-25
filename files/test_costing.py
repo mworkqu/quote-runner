@@ -1,4 +1,4 @@
-"""15 golden tests. No pytest required.
+"""16 golden tests. No pytest required.
 
     python3 test_costing.py          # standalone, zero dependencies
     python3 -m pytest test_costing.py -q   # also works, if you have it
@@ -281,6 +281,62 @@ class TestFeasibility(unittest.TestCase):
         self.assertFalse(f.deliverable)
         self.assertIn("lead_time_exceeded", [b.code for b in f.blockers])
 
+    def test_queue_is_the_longest_wait_not_the_sum(self):
+        """A job on two machines waits once, for the longer queue.
+
+        Machine backlogs drain in parallel. While the job sits in the mill's
+        44-hour queue the laser's 18-hour queue is draining too, so the laser
+        is free by the time milling finishes. Summing the two treats concurrent
+        waits as sequential and overstates lead time on every multi-operation
+        job. Nothing covered multi-machine queue aggregation, which is exactly
+        why the sum went unnoticed.
+        """
+        mill = CARD.machine("mill_01")
+        laser = CARD.machine("laser_01")
+        self.assertNotEqual(
+            mill.queue_hours, laser.queue_hours,
+            "this test is meaningless unless the two queues differ",
+        )
+
+        two_machines = Job.build(
+            3,
+            [
+                dict(machine_id="mill_01", material_id="alu_6082",
+                     machine_minutes_per_unit=55, material_grams_per_unit=820,
+                     cad_minutes=50, part_bbox_mm=[180, 120, 40]),
+                dict(machine_id="laser_01", material_id="acrylic_5mm",
+                     machine_minutes_per_unit=3, parts_per_sheet=8,
+                     cad_minutes=15, part_bbox_mm=[180, 120, 5]),
+            ],
+        )
+        f = check_feasibility(two_machines, CARD)
+
+        self.assertEqual(
+            f.queue_hours, max(mill.queue_hours, laser.queue_hours),
+            "the job waits once, for the longest queue it touches",
+        )
+        self.assertLess(
+            f.queue_hours, mill.queue_hours + laser.queue_hours,
+            "concurrent waits must not be added together",
+        )
+
+        # And two operations on the SAME machine still carry exactly one queue.
+        one_machine = Job.build(
+            3,
+            [
+                dict(machine_id="mill_01", material_id="alu_6082",
+                     machine_minutes_per_unit=55, material_grams_per_unit=820,
+                     cad_minutes=50, part_bbox_mm=[180, 120, 40]),
+                dict(machine_id="mill_01", material_id="brass_360",
+                     machine_minutes_per_unit=10, material_grams_per_unit=100,
+                     part_bbox_mm=[180, 120, 40]),
+            ],
+        )
+        self.assertEqual(
+            check_feasibility(one_machine, CARD).queue_hours, mill.queue_hours,
+            "two passes on one machine is still one queue",
+        )
+
     def test_out_of_stock_without_a_deadline_is_still_quotable(self):
         """Out of stock is a longer lead time. It is not a blocker.
 
@@ -429,7 +485,7 @@ class TestJudges(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    print("\n  Quote Runner — 15 golden tests\n")
+    print("\n  Quote Runner — 16 golden tests\n")
     suite = unittest.TestLoader().loadTestsFromModule(__import__("__main__"))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     total = result.testsRun
