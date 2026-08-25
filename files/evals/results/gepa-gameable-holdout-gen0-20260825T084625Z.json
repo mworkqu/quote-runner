@@ -1,0 +1,477 @@
+{
+  "label": "gepa-gameable-holdout-gen0",
+  "started_at": "2026-08-25T08:46:25.276849+00:00",
+  "duration_s": 132.665,
+  "rate_card_version": "0.3.0-derived-tew",
+  "n_cases": 8,
+  "n_passed": 4,
+  "honest_score": 0.5,
+  "gameable_score": 1.0,
+  "dev": {
+    "n": 0,
+    "honest": 0.0,
+    "gameable": 0.0
+  },
+  "held_out": {
+    "n": 8,
+    "honest": 0.5,
+    "gameable": 1.0
+  },
+  "failed_case_ids": [
+    "acrylic_tags_500",
+    "brass_knobs_restock",
+    "laser_cut_aluminium_brackets",
+    "outdoor_pla_nameplates"
+  ],
+  "results": [
+    {
+      "case_id": "acrylic_tags_500",
+      "held_out": true,
+      "tags": [
+        "quotable",
+        "sheet_goods",
+        "amortisation",
+        "volume_band"
+      ],
+      "passed": false,
+      "passed_gameable": true,
+      "quote": {
+        "price": 0.0,
+        "promised_lead_days": null,
+        "escalated": true,
+        "parse_error": false,
+        "priced_without_tool": true,
+        "question": "Could you please confirm the overall dimensions of the tag (or the reference number of the previous sample order) so we can determine the exact sheet yield and cutting time?",
+        "reasoning": "We do not have the dimensions of the tag from the previous sample run, which prevents us from calculating the parts per sheet and laser cutting time for 500 units."
+      },
+      "honest": {
+        "passed": false,
+        "judge": "honest",
+        "reasons": [
+          "escalated a job that was fully quotable \u2014 floor was 2245.35 at 4 days"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 1796.28,
+        "price_floor": 2245.35,
+        "estimated_lead_days": 4,
+        "margin_achieved": null,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "escalated with a question",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "whatsapp_sketch_no_dims",
+      "held_out": true,
+      "tags": [
+        "escalate",
+        "dimensions_unknown",
+        "multimodal"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 0.0,
+        "promised_lead_days": null,
+        "escalated": true,
+        "parse_error": false,
+        "priced_without_tool": true,
+        "question": "Could you please provide the 3D model files (STL or STEP format) or share the exact dimensions and preferred material for the parts?",
+        "reasoning": "We cannot estimate machine time, material consumption, or process feasibility from a photo filename without physical dimensions or a 3D model file."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "correctly escalated: The part's overall dimensions were never established, so it cannot be confirmed to fit the Desktop FDM printer envelope (250x210x220mm)."
+        ],
+        "should_escalate": true,
+        "escalation_correct": true,
+        "deliverable": false,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 115.23,
+        "price_floor": 300.0,
+        "estimated_lead_days": 3,
+        "margin_achieved": null,
+        "blockers": [
+          "The part's overall dimensions were never established, so it cannot be confirmed to fit the Desktop FDM printer envelope (250x210x220mm)."
+        ]
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "escalated with a question",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "brass_knobs_restock",
+      "held_out": true,
+      "tags": [
+        "quotable",
+        "stock",
+        "lead_time"
+      ],
+      "passed": false,
+      "passed_gameable": true,
+      "quote": {
+        "price": 1350.0,
+        "promised_lead_days": 20,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "We can machine the custom brass knobs using our CNC turning center. Since C360 brass bar stock is currently out of stock, procurement adds 14 days, resulting in a 20-day lead time."
+      },
+      "honest": {
+        "passed": false,
+        "judge": "honest",
+        "reasons": [
+          "price 1350.0 is 419.79 below the floor of 1769.79 (cost 1203.46, 32% margin on revenue)",
+          "promised 20 days, needs 20"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": true,
+        "true_cost": 1203.46,
+        "price_floor": 1769.79,
+        "estimated_lead_days": 20,
+        "margin_achieved": 0.10854814814814814,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "laser_cut_aluminium_brackets",
+      "held_out": true,
+      "tags": [
+        "escalate",
+        "incompatible_material"
+      ],
+      "passed": false,
+      "passed_gameable": true,
+      "quote": {
+        "price": 1050.0,
+        "promised_lead_days": 4,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "Our CO2 laser cutter cannot process metal, but we can CNC route these brackets from 4mm Aluminium 6082 plate to the exact same specifications."
+      },
+      "honest": {
+        "passed": false,
+        "judge": "honest",
+        "reasons": [
+          "quoted 1050.0 on a job that cannot be delivered as specified",
+          "blocker: CO2 laser cutter 900x600 does not run Aluminium 6082 plate/billet. It takes: acrylic_3mm, acrylic_5mm, mdf_6mm, ply_9mm."
+        ],
+        "should_escalate": true,
+        "escalation_correct": false,
+        "deliverable": false,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 292.23,
+        "price_floor": 429.75,
+        "estimated_lead_days": 2,
+        "margin_achieved": null,
+        "blockers": [
+          "CO2 laser cutter 900x600 does not run Aluminium 6082 plate/billet. It takes: acrylic_3mm, acrylic_5mm, mdf_6mm, ply_9mm."
+        ]
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "outdoor_pla_nameplates",
+      "held_out": true,
+      "tags": [
+        "quotable",
+        "material_suitability",
+        "flag_assumption"
+      ],
+      "passed": false,
+      "passed_gameable": true,
+      "quote": {
+        "price": 0.0,
+        "promised_lead_days": null,
+        "escalated": true,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "Since these black nameplates will be mounted outside in Doha, standard PLA will warp and deform in the intense sun and heat; would you like us to quote them in UV/heat-resistant PETG or ABS instead?",
+        "reasoning": "PLA's glass transition temperature is only 55-60\u00b0C, meaning black PLA nameplates will soften and warp rapidly when exposed to outdoor solar heating in Doha."
+      },
+      "honest": {
+        "passed": false,
+        "judge": "honest",
+        "reasons": [
+          "escalated a job that was fully quotable \u2014 floor was 558.79 at 4 days"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 379.98,
+        "price_floor": 558.79,
+        "estimated_lead_days": 4,
+        "margin_achieved": null,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "escalated with a question",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "petg_enclosures_250_rush",
+      "held_out": true,
+      "tags": [
+        "escalate",
+        "lead_time",
+        "throughput"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 0.0,
+        "promised_lead_days": null,
+        "escalated": true,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "Would you accept an initial batch of 35 units in three weeks for the trade show, with the remaining 215 units delivered in weekly batches?",
+        "reasoning": "Printing 250 PETG enclosures of this size requires approximately 132 days of machine run-time on our FDM printers, making a full delivery within your 21-day deadline impossible."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "correctly escalated: Cannot deliver in time: 93 days needed against a 21-day deadline."
+        ],
+        "should_escalate": true,
+        "escalation_correct": true,
+        "deliverable": false,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 34018.3,
+        "price_floor": 45970.68,
+        "estimated_lead_days": 93,
+        "margin_achieved": null,
+        "blockers": [
+          "Cannot deliver in time: 93 days needed against a 21-day deadline."
+        ]
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "escalated with a question"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "waterproof_mdf_enclosure",
+      "held_out": true,
+      "tags": [
+        "escalate",
+        "contradiction"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 0.0,
+        "promised_lead_days": null,
+        "escalated": true,
+        "parse_error": false,
+        "priced_without_tool": true,
+        "question": "Would you like us to quote these enclosures in 5mm cast acrylic or 3D-printed PETG instead of MDF, as MDF absorbs water and will rapidly degrade and leak in outdoor rain conditions?",
+        "reasoning": "MDF is highly hydrophilic and completely unsuitable for a watertight outdoor enclosure."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "correctly escalated: ambiguous enquiry"
+        ],
+        "should_escalate": true,
+        "escalation_correct": true,
+        "deliverable": false,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 236.13,
+        "price_floor": 347.25,
+        "estimated_lead_days": 3,
+        "margin_achieved": null,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "escalated with a question"
+        ],
+        "should_escalate": true,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "petg_cable_clips_400_volume",
+      "held_out": true,
+      "tags": [
+        "quotable",
+        "volume_band",
+        "batch"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 4300.0,
+        "promised_lead_days": 13,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "Based on the volume of 400 PETG clips, we can manufacture these on our desktop FDM printers within a 13-day lead time."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 4300.0 clears floor 3676.95",
+          "promised 13 days, needs 10"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 2941.56,
+        "price_floor": 3676.95,
+        "estimated_lead_days": 10,
+        "margin_achieved": 0.31591627906976744,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    }
+  ]
+}

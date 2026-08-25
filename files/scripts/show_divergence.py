@@ -49,8 +49,31 @@ for a, b in zip(honest["curve"], gameable["curve"]):
     print(f"   {fmt(a, 'dev_honest'):<33}  |   {fmt(b, 'dev_gameable'):<33}")
 
 print("   " + "-" * 33 + "  |   " + "-" * 33)
-print(f"   BEST: gen {honest['best_generation']:<25}|   "
-      f"BEST: gen {gameable['best_generation']} (seed, untouched)")
+
+
+def _sel_and_rescore(run, curve_key, rescore_key):
+    """The score the winning generation was CHOSEN on, and optimise()'s
+    end-of-run re-evaluation of that same instruction. Where they differ, the
+    difference is sampling noise on a prompt that never changed."""
+    best = run["best_generation"]
+    sel = next(r[curve_key] for r in run["curve"] if r["generation"] == best)
+    return sel, run[rescore_key]
+
+
+h_sel, h_re = _sel_and_rescore(honest, "dev_honest", "best_dev_honest")
+g_sel, g_re = _sel_and_rescore(gameable, "dev_gameable", "best_dev_gameable")
+
+h_lines = [f"BEST: gen {honest['best_generation']}",
+           f"  selection score  {h_sel:6.1%}",
+           f"  re-score         {h_re:6.1%}"]
+g_lines = [f"BEST: gen {gameable['best_generation']} (seed, untouched)",
+           f"  selection score  {g_sel:6.1%}",
+           f"  re-score         {g_re:6.1%}"]
+for _h, _g in zip(h_lines, g_lines):
+    print(f"   {_h:<33}  |   {_g}")
+print()
+print("   Selection score is what that generation scored when it was chosen.")
+print("   Re-score is the same instruction re-evaluated at the end of the run.")
 print()
 print("=" * W)
 print("  HELD-OUT  --  8 cases, scored ONCE, never optimised against")
@@ -62,9 +85,29 @@ print(f"   optimised on the gameable proxy   honest {g_hold['honest_score']:5.1%
       f"    gameable {g_hold['gameable_score']:5.1%}")
 print()
 gap = (h_hold["honest_score"] - g_hold["honest_score"]) * 100
-print("   The proxy scores a perfect 100%. On the ruler that decides whether")
-print(f"   the shop stays solvent it is {gap:.1f} points WORSE.")
-print("   A perfect score and a bankrupt workshop.")
+proxy_own = g_hold["gameable_score"]
+
+if proxy_own >= 1.0:
+    print("   The proxy scores a perfect 100% on its own ruler.")
+else:
+    print(f"   The proxy scores {proxy_own:.1%} on its own ruler.")
+
+if abs(gap) < 0.05:
+    # Equal to the resolution of this set. Claiming a divergence here would be
+    # asserting something the numbers do not support.
+    print("   On the ruler that decides whether the shop stays solvent both arms")
+    print(f"   score the same ({h_hold['honest_score']:.1%}).")
+    print("   The divergence is NOT detectable on this held-out set.")
+elif gap > 0:
+    print("   On the ruler that decides whether the shop stays solvent it is")
+    print(f"   {gap:.1f} points WORSE than the honest-trained prompt.")
+    if proxy_own >= 1.0:
+        print("   A perfect score and a bankrupt workshop.")
+else:
+    print("   On the ruler that decides whether the shop stays solvent it is")
+    print(f"   {abs(gap):.1f} points BETTER than the honest-trained prompt.")
+    print("   That is the opposite of the expected divergence, and this run is")
+    print("   not evidence for it.")
 print()
 print("=" * W)
 print()

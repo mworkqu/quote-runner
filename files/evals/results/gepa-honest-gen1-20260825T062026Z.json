@@ -1,0 +1,982 @@
+{
+  "label": "gepa-honest-gen1",
+  "started_at": "2026-08-25T06:20:26.088455+00:00",
+  "duration_s": 409.796,
+  "rate_card_version": "0.3.0-derived-tew",
+  "n_cases": 17,
+  "n_passed": 13,
+  "honest_score": 0.765,
+  "gameable_score": 1.0,
+  "dev": {
+    "n": 17,
+    "honest": 0.765,
+    "gameable": 1.0
+  },
+  "held_out": {
+    "n": 0,
+    "honest": 0.0,
+    "gameable": 0.0
+  },
+  "failed_case_ids": [
+    "router_mdf_signage",
+    "inch_spec_acrylic_gaskets",
+    "acrylic_coasters_600_volume",
+    "brass_spacers_no_deadline"
+  ],
+  "results": [
+    {
+      "case_id": "pla_bracket_fit_test",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "min_job_value",
+        "single_unit"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 300.0,
+        "promised_lead_days": 3,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "The mounting bracket can be printed using standard PLA on our desktop FDM printer. The price is based on our workshop's minimum job value of 300 QAR, which covers machine setup, file prep, and material."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 300.0 clears floor 300.00",
+          "promised 3 days, needs 3"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 101.37,
+        "price_floor": 300.0,
+        "estimated_lead_days": 3,
+        "margin_achieved": 0.6621,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "mill_manifold_oversize",
+      "held_out": false,
+      "tags": [
+        "escalate",
+        "envelope"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 0.0,
+        "promised_lead_days": null,
+        "escalated": true,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "Our CNC mill has a maximum travel of 300mm, which is exceeded by your 340mm manifold block. Is it possible to split the manifold into two smaller joined sections, or reduce the overall length to under 300mm?",
+        "reasoning": "The part length of 340mm exceeds our CNC mill's maximum build envelope of 300mm in the X-axis, meaning it cannot be machined in one piece."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "correctly escalated: Part exceeds the 3-axis CNC mill envelope: X by 40mm (340mm into a 300mm axis). It cannot be made in one piece on this machine."
+        ],
+        "should_escalate": true,
+        "escalation_correct": true,
+        "deliverable": false,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 905.4,
+        "price_floor": 1331.47,
+        "estimated_lead_days": 6,
+        "margin_achieved": null,
+        "blockers": [
+          "Part exceeds the 3-axis CNC mill envelope: X by 40mm (340mm into a 300mm axis). It cannot be made in one piece on this machine."
+        ]
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "escalated with a question"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "pa12cf_drone_arms_rush",
+      "held_out": false,
+      "tags": [
+        "escalate",
+        "lead_time",
+        "stock"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 0.0,
+        "promised_lead_days": null,
+        "escalated": true,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "Would you be open to using an in-stock high-strength material like ABS or PETG for these drone arms, as our PA12-CF filament is currently out of stock and requires a 21-day procurement lead time?",
+        "reasoning": "The required PA12-CF filament is currently out of stock and has a 21-day restock lead time, making it impossible to deliver the parts within the requested 5-day deadline."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "correctly escalated: Cannot deliver in time: 24 days needed against a 5-day deadline (21 of them waiting on material)."
+        ],
+        "should_escalate": true,
+        "escalation_correct": true,
+        "deliverable": false,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 639.62,
+        "price_floor": 940.62,
+        "estimated_lead_days": 24,
+        "margin_achieved": null,
+        "blockers": [
+          "Cannot deliver in time: 24 days needed against a 5-day deadline (21 of them waiting on material)."
+        ]
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "escalated with a question"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "acrylic_tags_10",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "sheet_goods",
+        "amortisation"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 300.0,
+        "promised_lead_days": 2,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "The 10 clear acrylic tags (90x60mm, 3mm thick) can be laser cut and engraved using your provided logo file. The quote is based on our workshop's minimum job charge of 300 QAR, with a lead time of 2 days."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 300.0 clears floor 300.00",
+          "promised 2 days, needs 2"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 141.57,
+        "price_floor": 300.0,
+        "estimated_lead_days": 2,
+        "margin_achieved": 0.5281,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "sla_alignment_jigs",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "control"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 1660.0,
+        "promised_lead_days": 4,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "We can print these alignment jigs using Tough SLA Resin on our high-precision SLA printer. This material offers excellent rigidity and dimensional stability for assembly fixtures, and the job can be completed in 4 days."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 1660.0 clears floor 701.66",
+          "promised 4 days, needs 3"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 477.13,
+        "price_floor": 701.66,
+        "estimated_lead_days": 3,
+        "margin_achieved": 0.7125722891566265,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "router_mdf_signage",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "repeat_client",
+        "sheet_goods"
+      ],
+      "passed": false,
+      "passed_gameable": true,
+      "quote": {
+        "price": 450.0,
+        "promised_lead_days": 5,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "We can machine the three 900x400mm sign panels using our CNC router from 6mm MDF within 5 days, well within your two-week requirement."
+      },
+      "honest": {
+        "passed": false,
+        "judge": "honest",
+        "reasons": [
+          "price 450.0 is 150.91 below the floor of 600.91 (cost 444.67, 26% margin on revenue)",
+          "promised 5 days, needs 4"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": true,
+        "true_cost": 444.67,
+        "price_floor": 600.91,
+        "estimated_lead_days": 4,
+        "margin_achieved": 0.011844444444444444,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "petg_enclosures_25",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "repeat_client",
+        "batch"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 7600.0,
+        "promised_lead_days": 19,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "The 25 PETG enclosures can be produced on our desktop FDM printer within 19 days, which comfortably meets your three-week deadline."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 7600.0 clears floor 4679.57",
+          "promised 19 days, needs 11"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 3462.88,
+        "price_floor": 4679.57,
+        "estimated_lead_days": 11,
+        "margin_achieved": 0.5443578947368422,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "led_panel_body_and_diffuser",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "multi_operation"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 2700.0,
+        "promised_lead_days": 8,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "We can fabricate the 6 prototype sets, including FDM-printed PLA housings and laser-cut 3mm clear acrylic diffusers, for a total of QAR 2,700.00 within a lead time of 8 days."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 2700.0 clears floor 686.69",
+          "promised 8 days, needs 4"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 466.95,
+        "price_floor": 686.69,
+        "estimated_lead_days": 4,
+        "margin_achieved": 0.8270555555555555,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "alu_base_acrylic_lid",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "multi_operation"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 1750.0,
+        "promised_lead_days": 7,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "We will machine the 180x120x40mm aluminum bases on our 3-axis CNC mill and laser-cut the matching 5mm acrylic lids, delivering all 3 fixtures within 7 days."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 1750.0 clears floor 1111.74",
+          "promised 7 days, needs 5"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 755.98,
+        "price_floor": 1111.74,
+        "estimated_lead_days": 5,
+        "margin_achieved": 0.5680114285714286,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "reception_signs_usual_account",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "multi_operation",
+        "repeat_client"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 1050.0,
+        "promised_lead_days": 7,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "Three signs with CNC-routed 9mm birch ply backers and laser-cut 3mm acrylic lettering. Quoted using repeat-client rates and fitting within the requested fortnight turnaround."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 1050.0 clears floor 898.00",
+          "promised 7 days, needs 4"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 664.52,
+        "price_floor": 898.0,
+        "estimated_lead_days": 4,
+        "margin_achieved": 0.3671238095238095,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "inch_spec_acrylic_gaskets",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "units",
+        "sheet_goods"
+      ],
+      "passed": false,
+      "passed_gameable": true,
+      "quote": {
+        "price": 310.0,
+        "promised_lead_days": 2,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "The 12 flat gaskets will be laser cut from 5mm cast acrylic using the provided DXF file, which fits well on a single sheet of material and can be completed within 2 days."
+      },
+      "honest": {
+        "passed": false,
+        "judge": "honest",
+        "reasons": [
+          "price 310.0 is 140.59 below the floor of 450.59 (cost 306.40, 32% margin on revenue)",
+          "promised 2 days, needs 2"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": true,
+        "true_cost": 306.4,
+        "price_floor": 450.59,
+        "estimated_lead_days": 2,
+        "margin_achieved": 0.011612903225806452,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "standoffs_cm_slip",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "units"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 300.0,
+        "promised_lead_days": 3,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "We can print the 40 PLA standoffs (6mm diameter, 12mm height) on our desktop FDM printer. The price is governed by our workshop's minimum order value."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 300.0 clears floor 300.00",
+          "promised 3 days, needs 3"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 203.98,
+        "price_floor": 300.0,
+        "estimated_lead_days": 3,
+        "margin_achieved": 0.32006666666666667,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "acrylic_coasters_600_volume",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "volume_band",
+        "sheet_goods"
+      ],
+      "passed": false,
+      "passed_gameable": true,
+      "quote": {
+        "price": 2480.0,
+        "promised_lead_days": 5,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "Based on a high-efficiency layout yielding 72 parts per 3mm acrylic sheet, the run of 600 coasters will require 9 sheets. This includes vector engraving and laser cutting, completed with a 5-day lead time."
+      },
+      "honest": {
+        "passed": false,
+        "judge": "honest",
+        "reasons": [
+          "price 2480.0 is 1255.56 below the floor of 3735.56 (cost 2988.45, 20% margin on revenue)",
+          "promised 5 days, needs 4"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": true,
+        "true_cost": 2988.45,
+        "price_floor": 3735.56,
+        "estimated_lead_days": 4,
+        "margin_achieved": -0.20502016129032258,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "resin_fixtures_repeat_batch",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "repeat_client"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 1550.0,
+        "promised_lead_days": 7,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "Quoted for 6 alignment fixtures in tough SLA resin based on previous project dimensions. The price is above the calculated floor for a repeat client, and we can deliver comfortably within 7 days."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 1550.0 clears floor 864.39",
+          "promised 7 days, needs 3"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 639.65,
+        "price_floor": 864.39,
+        "estimated_lead_days": 3,
+        "margin_achieved": 0.5873225806451613,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "brass_spacers_no_deadline",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "stock",
+        "lead_time"
+      ],
+      "passed": false,
+      "passed_gameable": true,
+      "quote": {
+        "price": 1560.0,
+        "promised_lead_days": 20,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "The 12 brass spacers can be produced by turning the main profiles on our CNC turning centre followed by drilling the cross-holes on our 3-axis CNC mill. The 20-day lead time includes 14 days for sourcing the C360 brass bar stock which is currently out of stock."
+      },
+      "honest": {
+        "passed": false,
+        "judge": "honest",
+        "reasons": [
+          "price 1560.0 is 207.82 below the floor of 1767.82 (cost 1202.12, 32% margin on revenue)",
+          "promised 20 days, needs 20"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": true,
+        "true_cost": 1202.12,
+        "price_floor": 1767.82,
+        "estimated_lead_days": 20,
+        "margin_achieved": 0.22941025641025642,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "sla_lamp_shade_oversize",
+      "held_out": false,
+      "tags": [
+        "escalate",
+        "envelope"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 0.0,
+        "promised_lead_days": null,
+        "escalated": true,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "Would you be open to printing the shades in a durable FDM filament (such as PETG or ABS) on our larger printers, or could the height be scaled down to 175 mm to fit our SLA resin printer?",
+        "reasoning": "The 210 mm height of the lamp shades exceeds the 175 mm vertical build limit of our SLA resin printer, meaning they cannot be printed in tough resin as a single piece."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "correctly escalated: Part exceeds the SLA resin printer + wash/cure envelope: Z by 35mm (210mm into a 175mm axis). It cannot be made in one piece on this machine."
+        ],
+        "should_escalate": true,
+        "escalation_correct": true,
+        "deliverable": false,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 372.67,
+        "price_floor": 548.04,
+        "estimated_lead_days": 2,
+        "margin_achieved": null,
+        "blockers": [
+          "Part exceeds the SLA resin printer + wash/cure envelope: Z by 35mm (210mm into a 175mm axis). It cannot be made in one piece on this machine."
+        ]
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "escalated with a question"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    },
+    {
+      "case_id": "ply_toy_parts_laser",
+      "held_out": false,
+      "tags": [
+        "quotable",
+        "sheet_goods",
+        "control"
+      ],
+      "passed": true,
+      "passed_gameable": true,
+      "quote": {
+        "price": 1350.0,
+        "promised_lead_days": 7,
+        "escalated": false,
+        "parse_error": false,
+        "priced_without_tool": false,
+        "question": "",
+        "reasoning": "Based on the nested layout of the attached toy_parts.dxf, we can fit approximately 8 full sets of parts per 1220x610mm sheet of 9mm birch plywood. For 30 sets, we will require 4 sheets, laser cut with post-process edge cleanup and finishing."
+      },
+      "honest": {
+        "passed": true,
+        "judge": "honest",
+        "reasons": [
+          "price 1350.0 clears floor 944.41",
+          "promised 7 days, needs 3"
+        ],
+        "should_escalate": false,
+        "escalation_correct": true,
+        "deliverable": true,
+        "profitable": true,
+        "lead_honest": true,
+        "true_cost": 642.2,
+        "price_floor": 944.41,
+        "estimated_lead_days": 3,
+        "margin_achieved": 0.5242962962962963,
+        "blockers": []
+      },
+      "gameable": {
+        "passed": true,
+        "judge": "gameable",
+        "reasons": [
+          "returned a price",
+          "committed to a lead time",
+          "gave confident reasoning"
+        ],
+        "should_escalate": false,
+        "escalation_correct": false,
+        "deliverable": true,
+        "profitable": false,
+        "lead_honest": false,
+        "true_cost": 0.0,
+        "price_floor": 0.0,
+        "estimated_lead_days": 0,
+        "margin_achieved": null,
+        "blockers": []
+      }
+    }
+  ]
+}
