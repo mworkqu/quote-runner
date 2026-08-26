@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quote Runner</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+
+<main class="shell">
+
+  <header class="masthead">
+    <div>
+      <h1>QUOTE RUNNER</h1>
+      <p class="subtitle">AI Manufacturing Quotation Agent</p>
+    </div>
+    <div class="stamp" id="shop-stamp" aria-live="polite"></div>
+  </header>
+
+  <!-- 1. INPUT ------------------------------------------------------------ -->
+  <section class="panel" id="panel-input">
+    <h2 class="panel-title">Enquiry</h2>
+
+    <label class="sr-only" for="enquiry">Describe what you'd like manufactured</label>
+    <textarea id="enquiry" rows="5"
+              placeholder="Describe what you'd like manufactured..."></textarea>
+
+    <div class="examples">
+      <span class="examples-label">Examples</span>
+      <button type="button" class="example" data-example="turned">Turned brass part</button>
+      <button type="button" class="example" data-example="oversize">Exceeds machine envelope</button>
+      <button type="button" class="example" data-example="nodims">Missing dimensions</button>
+    </div>
+
+    <div class="actions">
+      <button type="button" id="generate" class="primary">Generate Quote</button>
+      <span class="hint" id="hint"></span>
+    </div>
+  </section>
+
+  <!-- 2. AGENT ACTIVITY --------------------------------------------------- -->
+  <section class="panel" id="panel-activity" hidden>
+    <h2 class="panel-title">
+      Agent activity
+      <span class="panel-meta" id="activity-meta"></span>
+    </h2>
+    <ol class="steps" id="steps"></ol>
+    <p class="footnote" id="activity-note"></p>
+  </section>
+
+  <!-- 3a. RESULT — QUOTATION ---------------------------------------------- -->
+  <section class="panel quote" id="panel-quote" hidden>
+
+    <div class="quote-head">
+      <div>
+        <span class="tag">Quotation</span>
+        <h2 class="quote-ref" id="quote-ref"></h2>
+      </div>
+      <button type="button" id="download" class="secondary">Download Quote</button>
+    </div>
+
+    <p class="request-echo" id="quote-request"></p>
+
+    <dl class="facts" id="quote-facts"></dl>
+
+    <div class="total">
+      <span class="total-label">Total</span>
+      <span class="total-figure" id="total-figure"></span>
+      <!-- Provenance, on screen rather than in the collapsed breakdown: the
+           engine's floor is what bounded the agent's number. -->
+      <span class="provenance" id="provenance"></span>
+    </div>
+
+    <details class="breakdown">
+      <summary>Cost breakdown</summary>
+      <div class="breakdown-body">
+        <p class="breakdown-note">
+          Every line below is produced by the deterministic costing engine, not
+          by the language model.
+        </p>
+        <table class="lines" id="cost-lines"></table>
+      </div>
+    </details>
+
+    <p class="smallprint">
+      Quote valid for 14 days. Production begins after approval.
+    </p>
+  </section>
+
+  <!-- 3b. RESULT — UNABLE TO QUOTE ---------------------------------------- -->
+  <section class="panel refusal" id="panel-refusal" hidden>
+    <span class="tag tag-warn">Unable to quote</span>
+    <h2 class="refusal-head" id="refusal-head">Unable to quote</h2>
+
+    <p class="request-echo" id="refusal-request"></p>
+
+    <div class="block" id="refusal-reasons-block">
+      <h3>Reason</h3>
+      <ul class="reasons" id="refusal-reasons"></ul>
+    </div>
+
+    <div class="block" id="refusal-action-block">
+      <h3>Recommended action</h3>
+      <p id="refusal-action"></p>
+    </div>
+
+    <p class="footnote" id="refusal-footnote"></p>
+  </section>
+
+  <!-- 3c. RESULT — ERROR --------------------------------------------------- -->
+  <section class="panel error" id="panel-error" hidden>
+    <span class="tag tag-error">Error</span>
+    <h2 class="error-head" id="error-head"></h2>
+    <p id="error-message"></p>
+    <p class="footnote" id="error-footnote"></p>
+  </section>
+
+  <footer class="colophon">
+    <span id="colophon-text">Prices produced by a deterministic costing engine.</span>
+  </footer>
+
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>

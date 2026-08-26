@@ -88,7 +88,8 @@ Two constants worth knowing about:
 
 ## Trap cases the model already handles
 
-`demo.py` runs these — they're four of your 25:
+`demo.py` runs these — five of the 25, shown as four rows (the acrylic tags
+appear at both 10 and 500 units in one row):
 
 | Trap | What the model does |
 |---|---|
@@ -111,9 +112,13 @@ crashing the trace.
 ## Next
 
 All 25 cases are authored and 8 are held out — see *Eval set* below. What is
-actually next is the judge. `honest_judge` is flat above the floor, so the
-optimiser learned to sit exactly on it: the deployed service prices at the floor
-and promises the bare lead time, leaving no cushion for estimation error. A judge
+actually next is the judge. `honest_judge` is flat above the floor, and the
+optimiser read that indifference accurately: the GEPA generation-2 instruction
+tells the agent to set the price to *exactly* `price_floor` and the lead time to
+*exactly* `estimated_lead_days`, leaving no cushion for estimation error. That
+instruction is not what ships — `agent/prompt.py` is generation 0, nothing loads
+an optimised prompt at runtime, and the deployed agent quotes at or above the
+floor rather than on it. A judge
 that rewarded margin captured above the floor, rather than only clearing it, would
 produce a different agent — and would invalidate every number here, which is why
 it is next and not now.
@@ -140,10 +145,25 @@ rewrite the prompt toward nonsense, and you won't notice for two days.
 Real agents receive only `case.enquiry` and `case.attachments`. There is no
 argument through which ground truth can reach them.
 
-The measured baseline is **honest 20%, gameable 96%** across all 25 cases — dev
-set alone, honest 23.5% against gameable 100%. That gap is the video's opening
-shot: the same agent, the same 25 quotes, scored by a judge that costs the job
-and a judge that does not.
+The baseline is not an agent. `naive_quote` is an **uncosted pricing heuristic**
+— a hardcoded function that reads a quantity out of the text, charges a flat rate
+per unit against a fixed minimum, always promises seven days, and never
+escalates. It calls no model and never calls `price_job`.
+
+Measured across all 25 cases against rate card `0.3.0-derived-tew`: **honest
+20.0%, gameable 96.0%** (dev n=17: 23.5% / 100.0%; held out n=8: 12.5% / 87.5%).
+Nineteen cases pass the gameable judge and fail the honest one. The single case
+the gameable judge fails is the one where the heuristic returned no number at
+all.
+
+That gap is the video's opening shot, and it is a claim about the judge rather
+than about an agent: a judge that rewards the shape of an answer passes a stub
+that never consulted the cost engine, on jobs the shop physically cannot do.
+`mill_manifold_oversize` — a part 40mm past the mill's X axis — passes the
+gameable judge at QAR 250.00.
+
+The agent-side reward-hacking result is a separate demonstration with a separate
+subject. The two are not the same run and must not be described as one.
 
 ## The agent
 
@@ -153,18 +173,40 @@ agent/
   tools.py        LLM-facing tool wrappers
   quote_agent.py  ADK agent + harness adapter
 server.py         Cloud Run service (/healthz, /quote, /eval)
+web_api.py        the UI layer (/, /api/quote, /api/meta, static assets)
+web/              index.html + app.css + app.js — no build step, no framework
 scripts/verify_vertex.py   preflight — run this first
 ```
 
+`web_api.py` is a reader, not a second agent. It runs the same
+`QuoteRunnerAgent.quote_async` the harness and `POST /quote` run, then reads the
+ADK tool events that run emitted. `POST /api/quote` returns the executed tool
+calls with their arguments, the engine's verbatim response and real per-call
+timings, plus the resolved outcome. `GET /api/meta` serves currency, rate card
+version, model and revision for the page header. `/healthz`, `/quote` and
+`/eval` are unchanged.
+
+No price reaches the screen unless it came from a real `price_job` call and
+clears that call's `price_floor`. An unparseable reply, a figure below the
+floor, and a quote produced without ever calling the engine each render an
+error state instead — and a refusal renders no currency figure anywhere,
+including inside the engine's own working in the activity panel.
+
 ```bash
 export GOOGLE_CLOUD_PROJECT=your-project
-export GOOGLE_CLOUD_LOCATION=us-central1
+export GOOGLE_CLOUD_LOCATION=global   # model endpoint, NOT a Cloud Run region
 export GOOGLE_GENAI_USE_VERTEXAI=TRUE
 gcloud auth application-default login
 
 python3 scripts/verify_vertex.py     # 5 checks, fails fast
-./deploy.sh your-project us-central1 # Cloud Run
+./deploy.sh your-project us-central1 # Cloud Run region — a different thing
 ```
+
+Those two locations are not the same setting and must not match.
+`GOOGLE_CLOUD_LOCATION` is the Vertex publisher endpoint: `gemini-3.5-flash` is
+served only on `global`, and a regional value 404s at request time. The argument
+to `deploy.sh` is the region the *container* runs in, where `us-central1` is
+correct. `deploy.sh` already sets both correctly on its own.
 
 `QuoteRunnerAgent.quote(enquiry, attachments)` matches the harness signature
 exactly, so the same agent object is scored by the same judge locally, inside
@@ -181,14 +223,30 @@ rejected historically, and it fails at request time rather than build time.
 Primitives are ugly and they work everywhere.
 
 `POST /eval` against the deployed URL runs the whole case set and returns the
-honest score. That request, with Cloud Trace filling up beside it, is your
-"runs on Google Cloud" shot.
+honest score. That request is your "runs on Google Cloud" shot.
+
+Cloud Trace is not. It holds Cloud Run's own ingress spans and nothing else —
+the ADK tool calls do not appear there, and the spans are sampled, so not every
+request produces a trace at all. Measured after disabling CPU throttling, which
+did not change it. The UI's activity panel is the honest view of tool calls,
+because it is built from real ADK events.
 
 ## Known limitations
 
 Written down because we found them, not because someone asked. Each one is a
 thing the numbers below cannot support, and the fastest way to lose an
 argument is to claim more than your own results file does.
+
+> **Provenance of every GEPA score in this section.** All of them were measured
+> against rate card `0.2.0-derived-tew`. The card has since moved to
+> `0.3.0-derived-tew` — a CNC lathe was added, two turning jobs moved off the
+> mill, and `feasibility.py` stopped summing machine queues — which changed the
+> ground truth on 6 of 25 cases. **The optimisation has not been re-run against
+> the corrected case set, so there is no current GEPA measurement.** The figures
+> below are kept because sections 1 and 3 are arguments *about* those specific
+> runs; they are not claims about the system as it stands today. The naive
+> baseline in *Eval set* above is the only figure in this README measured
+> against `0.3.0-derived-tew`.
 
 ### 1. The dev-set lift is inside run-to-run noise
 

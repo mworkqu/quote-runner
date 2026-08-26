@@ -1,13 +1,20 @@
 """Cloud Run service.
 
-Three endpoints:
+Endpoints:
   GET  /healthz  liveness, and a cheap way to prove the container is on GCP
   POST /quote    one enquiry in, one quote out
   POST /eval     run the whole eval set and return the honest score
 
+  GET  /         the customer-facing UI          ] added by web_api.py, which
+  POST /api/quote  the UI's quote endpoint       ] reuses agent() below rather
+  GET  /api/meta   currency, rate card, revision ] than building its own runner
+  GET  /app.css, /app.js  static assets          ]
+
 /eval is here for the demo video. Hitting it against the deployed URL and
-watching the honest score come back while Cloud Trace fills up is the single
-clearest "this really runs on Google Cloud" shot you can film.
+watching the honest score come back is the clearest "this really runs on Google
+Cloud" shot you can film. Note that Cloud Trace does NOT fill up alongside it:
+it records Cloud Run's ingress spans only, sampled, and the ADK tool calls never
+reach it. The UI's activity panel is the honest view of those.
 """
 
 from __future__ import annotations
@@ -52,6 +59,13 @@ def _init_tracing() -> str:
 
 
 TRACING = _init_tracing()
+
+# The web UI. A separate module so this file stays the deployment surface and
+# nothing about /quote or /eval changes. It calls agent() above, so the UI and
+# the eval path share one agent instance and one code path.
+from web_api import router as web_router  # noqa: E402
+
+app.include_router(web_router)
 
 
 class Enquiry(BaseModel):
