@@ -176,6 +176,7 @@ server.py         Cloud Run service (/healthz, /quote, /eval)
 web_api.py        the UI layer (/, /api/quote, /api/meta, static assets)
 web/              index.html + app.css + app.js — no build step, no framework
 scripts/verify_vertex.py   preflight — run this first
+scripts/cr_proxy.py        reach a service that is NOT publicly invokable
 ```
 
 `web_api.py` is a reader, not a second agent. It runs the same
@@ -208,6 +209,41 @@ served only on `global`, and a regional value 404s at request time. The argument
 to `deploy.sh` is the region the *container* runs in, where `us-central1` is
 correct. `deploy.sh` already sets both correctly on its own.
 
+### If the deploy cannot grant public access
+
+`deploy.sh` passes `--allow-unauthenticated`, but an organisation that enforces
+Domain Restricted Sharing (`constraints/iam.allowedPolicyMemberDomains`) will
+refuse to grant `allUsers` the `run.invoker` role, and the deploy **completes
+with a warning rather than an error**. The service runs; the browser gets a 403.
+Watch for `Setting IAM policy failed` in the deploy output.
+
+Two ways out. Override the constraint at project scope and re-run the binding:
+
+```bash
+gcloud run services add-iam-policy-binding quote-runner   --region=us-central1 --member=allUsers --role=roles/run.invoker
+```
+
+That is what this deployment did, and the service is now publicly invokable.
+Where the constraint cannot be changed, reach it with a token instead. The
+supported tool is `gcloud run services proxy`, which needs the
+`cloud-run-proxy` gcloud component; where that cannot be installed — it writes
+to the SDK directory, which on Windows needs Administrator —
+`scripts/cr_proxy.py` does the same job with the standard library:
+
+```bash
+python3 scripts/cr_proxy.py https://YOUR-SERVICE.run.app 8080
+# then open http://localhost:8080
+```
+
+It binds localhost, attaches `gcloud auth print-identity-token` to every
+forwarded request, and returns the response untouched. It serves nothing of its
+own, so every byte the browser renders came from Cloud Run — confirm that by
+checking the revision in the page header against
+`gcloud run services describe`. Tokens last about an hour; restart it if
+requests start failing. The service URL is an argument, so nothing
+deployment-specific is stored in the file, and the Dockerfile does not copy
+`scripts/`, so it never enters the image.
+
 `QuoteRunnerAgent.quote(enquiry, attachments)` matches the harness signature
 exactly, so the same agent object is scored by the same judge locally, inside
 the GEPA loop, and behind Cloud Run. There is no eval-only code path, so there
@@ -224,6 +260,12 @@ Primitives are ugly and they work everywhere.
 
 `POST /eval` against the deployed URL runs the whole case set and returns the
 honest score. That request is your "runs on Google Cloud" shot.
+
+`GET /healthz` is **not** reachable on `*.run.app`. It is intercepted at the
+Google edge and returns a 404 HTML page with or without a token — verified
+against the live service — so it can never serve as a smoke test, and the UI
+reads its header from `/api/meta` instead. The route still exists for platforms
+that do route it through.
 
 Cloud Trace is not. It holds Cloud Run's own ingress spans and nothing else —
 the ADK tool calls do not appear there, and the spans are sampled, so not every

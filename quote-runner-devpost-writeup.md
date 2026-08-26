@@ -19,7 +19,7 @@ Quote Runner takes an unstructured enquiry and returns either a priced quotation
 5. **Decides** — if the engine reports `deliverable: false`, the agent must not quote. It escalates and states the blockers. Otherwise it quotes at or above the floor.
 6. **Renders it** — a web UI on Cloud Run showing the quotation, or a refusal panel with the engine's blocker text and no price anywhere on screen.
 
-**Scope, precisely:** today you type a text enquiry into a web UI served from Cloud Run — reached through an authenticated proxy, not a public URL — and get back a quotation or a refusal. There is no attachment reading, no email or messaging integration, and no document generation.
+**Scope, precisely:** today you type a text enquiry into a web UI served from Cloud Run at https://quote-runner-uzwr63rsia-uc.a.run.app and get back a quotation or a refusal. There is no attachment reading, no email or messaging integration, and no document generation.
 
 **`price_job()` has no argument for a price.** That is the load-bearing sentence of the project. The model supplies grams and minutes; money comes back. There is no field through which a model can name a number and no prompt wording that unlocks one, because the constraint lives in a function signature rather than in an instruction. GEPA is allowed to rewrite the prompt. GEPA cannot rewrite a signature.
 
@@ -109,8 +109,6 @@ That result is structural, not statistical. No amount of sampling noise produces
 **Confidence is harder than capability.** Getting a plausible quote took an afternoon. Getting a reliable *"I cannot price this"* took most of the build. Models are eager. We stopped asking the model how confident it felt and derived refusal from concrete signals instead — does the bounding box fit the envelope, is the material on the shelf, does the lead time clear the deadline. A missing dimension is not a pass, it's a blocker, because the alternative is an agent that omits dimensions whenever they're inconvenient and gets rewarded for it.
 
 **Displaying a price you can't defend.** The agent names the final figure at or above the engine's floor, so the headline number is the model's. The UI gates it: no price renders unless it came from a real `price_job` call and clears that call's floor. A reply that can't be parsed, a figure below the floor, or a quote produced without ever calling the engine all render as an error state instead. On a refusal, no currency figure appears anywhere on the page — including inside the engine's own working in the activity panel.
-
-**We can't make the demo public.** The service is deployed and serving on Cloud Run, but our organisation enforces domain-restricted sharing, so `allUsers` cannot be granted `run.invoker` and the URL refuses unauthenticated requests. That's an org policy, not a defect. We demo through an authenticated proxy.
 
 ## Accomplishments that we're proud of
 

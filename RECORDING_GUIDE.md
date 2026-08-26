@@ -18,9 +18,12 @@ is no code left to write before you record.
 
 **The Cloud Run deploy is done.** Revision `quote-runner-00004-v42` serves 100%
 of traffic in `us-central1` and answers real enquiries — that is your "runs on
-Google Cloud" evidence, already in hand. The service is private (see the org
-policy note below); reach the UI with
-`gcloud run services proxy quote-runner --region us-central1 --port 8080`.
+Google Cloud" evidence, already in hand. **The service is public**: the org
+policy that blocked `allUsers` was overridden at project scope and
+`roles/run.invoker` is now granted, so the URL below answers unauthenticated
+requests from any browser.
+
+    https://quote-runner-uzwr63rsia-uc.a.run.app
 
 ### The numbers you have
 
@@ -227,12 +230,14 @@ Then the honest headline, using the wording from Part 2.
 **Filmed entirely in the Cloud Console.** No local terminal, no curl, no live
 model call that can fail while you are recording.
 
-**Why this changed.** The service deployed and reports `Ready`, but the
-organisation enforces Domain Restricted Sharing
-(`constraints/iam.allowedPolicyMemberDomains`), so `allUsers` cannot be granted
-`roles/run.invoker` and the public URL refuses unauthenticated requests. That is
-an org policy, not a defect in the build — and the Console shows the same facts
-without the fight. Do not burn recording time on it.
+**Why the Console.** It shows revision, region, image digest and env vars in one
+frame, with no live model call that can stall mid-take. Shot 6 is where the
+service actually answers.
+
+(An earlier version of this guide said the service was private. Domain
+Restricted Sharing did block `allUsers` at first; the constraint was overridden
+at project scope and the binding now exists. Ignore anything you remember about
+proxies.)
 
 **Already done, nothing to run:**
 
@@ -297,22 +302,92 @@ digits, or say "measured against our earlier rate card" out loud.
 
 ---
 
+### Shot 6 — the agent doing the job (60s) ← **the one that shows the product**
+
+Everything before this is evidence about the build. This is the build working.
+
+**Open the public URL in a clean browser window:**
+
+    https://quote-runner-uzwr63rsia-uc.a.run.app
+
+No proxy, no terminal, no token. Verified unauthenticated: `/`, `/api/meta`,
+`/app.css` and `/app.js` all return 200 with no `Authorization` header, and a
+full quote renders end to end.
+
+Use an incognito window. It proves there is no cached session doing the work,
+and it keeps your bookmarks and other tabs out of frame.
+
+**Before you roll, two checks:**
+
+1. The header stamp reads **`quote-runner-00004-v42`**. If it says `local` you
+   are on a local server and the shot is worthless.
+2. **Run one quote and throw it away.** The first request after a quiet period
+   pays a Cloud Run cold start on top of the usual 15–40s. Clear it before the
+   camera is on, or your first take has a minute of dead air in it.
+
+**On camera, click the three examples in this order:**
+
+- **Turned brass part** — quotes. Let the activity checklist fill in, then land
+  on the total and the line beneath it: *Engine floor: QAR X · quoted +Y% above
+  floor*. That line is the architecture in one sentence.
+- **Exceeds machine envelope** — refuses. The reason is the engine's own blocker
+  text naming the axis and the overhang in millimetres. **There is no price
+  anywhere on the screen.** Say that out loud; it is the point.
+- **Missing dimensions** — refuses and asks for the dimensions.
+
+**The URL is now doing work for you.** `*.run.app` in the address bar is visible
+proof this is Cloud Run and not localhost, so you no longer have to explain
+anything. Show it once at the start and let it sit there.
+
+If you want the strongest version of this shot, put Logs Explorer beside the UI,
+filtered to the service, and click *Generate Quote*: about 18 seconds later the
+line appears — `POST /api/quote 200 18.2s quote-runner-00004-v42`. Cause and
+effect, in Google's own logs, while the viewer watches.
+
+```
+resource.type="cloud_run_revision"
+resource.labels.service_name="quote-runner"
+httpRequest.requestUrl:"/api/quote"
+```
+
+**If it fails mid-shoot**, the service caps at 3 instances and each quote is two
+Vertex round trips, so a stall is far more likely to be a cold start than a
+fault. Wait it out before you touch anything.
+
+**Fallback, if the URL misbehaves on the day.** `files/scripts/cr_proxy.py`
+reaches the service with an identity token and serves it at `localhost:8080`:
+
+```bash
+python3 files/scripts/cr_proxy.py "$(gcloud run services describe quote-runner --region us-central1 --format='value(status.url)')" 8080
+```
+
+Tested and working, but you should not need it now. Its token lasts about an
+hour; restart it rather than debugging the app.
+
+---
+
 ## Part 4 — Your task list, in order
 
 1. **Clean the two directories** (commands in Part 3, before you start).
 2. **Deploy to Cloud Run — done.** Revision `quote-runner-00004-v42` is live.
-   The public URL is blocked by org-level Domain Restricted Sharing; shot 5 uses
-   the Console instead and loses nothing. Do not reopen this.
+   The org policy that blocked public access was overridden, `allUsers` now
+   holds `roles/run.invoker`, and the URL answers unauthenticated requests.
+   Shot 6 uses it directly.
 3. **Read the 15 newer eval cases.** You're the only person who can say whether
    a 210-minute PETG enclosure matches your machines. The oracle proves they're
    *consistent*, not that they're *real*.
 4. **Record shots 2, 3 and 4 first** — they need no cloud credentials and no
    network. If the deploy fights you, you still have three quarters of a video.
-5. **Record shot 5 last**, from the Console — no URL required.
-6. **Update the devpost.** The "Challenges" and "What we learned" sections
-   should now carry the noise finding and the caught overfit. Both are more
-   interesting than a clean win, and both are already written up in the README's
-   new *Known limitations* section — lift the text from there.
+5. **Record shot 5** from the Console — no URL required.
+6. **Record shot 6 last**, from the public URL in an incognito window, with one
+   throwaway quote already fired to clear the cold start. It is the only shot
+   that makes a live model call, so it goes last — after everything that cannot
+   fail is already in the can.
+7. **The devpost is already rewritten.** It now describes one LlmAgent with two
+   tools, the deterministic engine and the UI, carries the current
+   `0.3.0-derived-tew` naive baseline, and states plainly that there is no
+   current GEPA measurement. Read it once before you script the voiceover so
+   you do not narrate a claim it no longer makes.
 
 ## Part 5 — Questions a judge will ask
 
