@@ -100,7 +100,9 @@ The mechanism is exact. The gameable judge passes 100% of dev cases at generatio
 
 That result is structural, not statistical. No amount of sampling noise produces it, and it is stronger than the flat curve we expected to draw: **a broken proxy metric does not merely mislead an optimiser. It can remove the gradient entirely.**
 
-**We are not quoting GEPA scores here.** Every GEPA run we have on disk was measured against an earlier rate card, and we corrected the cost model afterwards — adding a CNC lathe, reassigning two turning jobs off the mill, and fixing how machine queues combine. We have not re-run the optimisation against the corrected case set, so we have no current number and we are not going to cite a superseded one. The mechanism above does not depend on the arithmetic. The scores would.
+**The numbers, re-measured against the corrected rate card `0.3.0-derived-tew`.** Optimising on `gameable_judge` selected **generation 0** — the untouched seed — with all six generations logged `(no change)`, because the proxy passed 100% of dev cases before the loop began. Optimising on `honest_judge` selected **generation 3** at a dev score of **82.3%**, which **re-scored 64.7%** when the same instruction was re-evaluated minutes later, *below* the seed's 76.5%.
+
+On the held-out set of 8 cases, scored once and never optimised against, **both arms score honest 50.0%**. The divergence between them is **not detectable on this held-out set**. We are reporting that because it is what our results file says, not because it is the result we wanted.
 
 ## Challenges we ran into
 
@@ -122,11 +124,13 @@ That result is structural, not statistical. No amount of sampling noise produces
 
 **1. Stamp your results with the version of the thing that produced them.**
 
-Every eval results file records the rate card version it ran against. When we corrected the cost model — added the lathe, moved two turning jobs off the mill, changed how queues combine — the card went from `0.2.0-derived-tew` to `0.3.0-derived-tew`, and every saved result still said `0.2.0`. The staleness was self-evident on inspection instead of silently wrong. Six of 25 cases had different ground truth, and every score in our own documentation was measured against the superseded card. We found that by reading a version string, not by noticing that a number looked odd. It cost four characters per file and it is the reason this write-up has no stale figures in it.
+Every eval results file records the rate card version it ran against. When we corrected the cost model — added the lathe, moved two turning jobs off the mill, changed how queues combine — the card went from `0.2.0-derived-tew` to `0.3.0-derived-tew`, and every saved result still said `0.2.0`. Six of 25 cases had different ground truth, and every score in our documentation had been measured against the superseded card. We found that by reading a version string, not by noticing that a number looked odd.
+
+Then we re-ran both arms against the corrected set and replaced the figures. The stamp is what made the staleness self-evident instead of silently wrong, and it is what told us which numbers had to be earned again. It cost four characters per file.
 
 **2. Our measurements are noisier than the differences we wanted to report.**
 
-One held-out case is worth 12.5 percentage points at n=8. On the dev set at n=17, one case is 5.9 points. We watched the same prompt score 70.6% and then 64.7% on the same 17 cases minutes apart, against a stochastic model at non-zero temperature.
+One held-out case is worth 12.5 percentage points at n=8. On the dev set at n=17, one case is 5.9 points. We watched the same prompt score 82.3% and then 64.7% on the same 17 cases minutes apart, against a stochastic model at non-zero temperature — the winner re-scoring below the 76.5% seed it had beaten. And on the held-out set the two arms we were trying to tell apart both landed on 50.0%.
 
 That means a five-point improvement and a coin flip are indistinguishable in our data, and we are not going to report one as if it were the other. The fix is more cases and repeated sampling per generation, not a better coach. Twenty-five cases was the right call for a week. It is not enough to measure what we wanted to measure.
 

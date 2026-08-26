@@ -279,36 +279,38 @@ Written down because we found them, not because someone asked. Each one is a
 thing the numbers below cannot support, and the fastest way to lose an
 argument is to claim more than your own results file does.
 
-> **Provenance of every GEPA score in this section.** All of them were measured
-> against rate card `0.2.0-derived-tew`. The card has since moved to
-> `0.3.0-derived-tew` — a CNC lathe was added, two turning jobs moved off the
-> mill, and `feasibility.py` stopped summing machine queues — which changed the
-> ground truth on 6 of 25 cases. **The optimisation has not been re-run against
-> the corrected case set, so there is no current GEPA measurement.** The figures
-> below are kept because sections 1 and 3 are arguments *about* those specific
-> runs; they are not claims about the system as it stands today. The naive
-> baseline in *Eval set* above is the only figure in this README measured
-> against `0.3.0-derived-tew`.
+> **Provenance.** Sections 1, 2 and 4 below are measured against rate card
+> `0.3.0-derived-tew` — both GEPA arms were re-run on 2026-08-25 after the cost
+> model was corrected (lathe added, two turning jobs moved off the mill,
+> `feasibility.py` stopped summing machine queues), which had changed the ground
+> truth on 6 of 25 cases. The superseded `0.2.0` results are kept under
+> `evals/results/pre-correction/` and the prompts under
+> `gepa/prompts/pre-correction-honest/`. **Section 3 is the exception and says so
+> in its own text** — it describes the earlier run, and the current winner does
+> not reproduce it.
 
 ### 1. The dev-set lift is inside run-to-run noise
 
-The honest run selected generation 2 at a dev score of **70.6%**. At the end of
+The honest run selected generation 3 at a dev score of **82.3%**. At the end of
 the loop, `optimise()` re-evaluates the winning instruction one final time. The
-same prompt, on the same 17 cases, scored **64.7%** — identical to the seed it
-was supposed to have beaten.
+same prompt, on the same 17 cases, scored **64.7%** — not merely worse than its
+selection score, but **below the seed it was supposed to have beaten**.
 
 ```
-gen 0 (seed)     0.6471
-gen 2 (winner)   0.7059   <- score that won selection
-gen 2 re-run     0.6471   <- same prompt, minutes later
+gen 0 (seed)     0.7647
+gen 3 (winner)   0.8235   <- score that won selection
+gen 3 re-run     0.6471   <- same prompt, minutes later
 ```
 
-One dev case is worth 0.0588. The improvement is one case. The variance is one
-case. **We cannot distinguish the two**, and neither can six generations at
-n=17 against a stochastic model at non-zero temperature.
+One dev case is worth 0.0588. The gap between selection and re-score is three
+cases; the gap between the winner and the seed it beat is two, in the wrong
+direction. **We cannot distinguish signal from sampling here**, and neither can
+six generations at n=17 against a stochastic model at non-zero temperature.
 
-The held-out gap — 75% honest for the honest-optimised prompt against 62.5% for
-the gameable-optimised one — is likewise a single case out of eight.
+The held-out set is worse for us, not better. Both arms — honest-optimised and
+gameable-optimised — score **honest 50.0%** on the 8 held-out cases. **The
+divergence is not detectable there at all.** `show_divergence.py` prints that
+conclusion in its own output.
 
 What this does *not* undermine: the gameable run rewrote the instruction
 **zero times in six generations** (below). That result is structural, not
@@ -338,11 +340,19 @@ optimiser. It can remove the gradient entirely.
 the floor**: it is indifferent between a price at `price_floor` and one 50%
 above it, and between a lead time of 4 days and 8.
 
-The optimiser read that indifference accurately and sat on every boundary at
-once. Generation 2 instructs the agent to price at *exactly* `price_floor`, and
-to promise *exactly* `estimated_lead_days` with no padding. Both clear the judge
-by definition. Both leave zero cushion in production, where the cushion is what
-absorbs estimation error.
+**This section describes the superseded `0.2.0` run, and the re-run did not
+reproduce it.** There, generation 2 instructed the agent to price at *exactly*
+`price_floor` and to promise *exactly* `estimated_lead_days` with no padding —
+both clear the judge by definition, and both leave zero cushion in production,
+where the cushion is what absorbs estimation error. The current winner
+(`gepa/prompts/honest/gen_3.txt`) says instead: quote "equal to or greater than
+the price_floor… under no circumstances less", and promise "a lead time no
+shorter than estimated_lead_days". The word *exactly* does not appear in it.
+
+So the flatness argument below still holds as an argument about the judge — a
+judge indifferent above the floor cannot penalise sitting on it — but we have
+observed the optimiser take that option **once**, not reliably. One run is not
+a behaviour.
 
 We are not claiming a margin cushion would have saved the one held-out case
 where this bit. On `acrylic_tags_500` the agent's *physical estimate* was about
@@ -356,22 +366,25 @@ it invalidates every number here, which is why it is next and not now.
 
 ### 4. The optimiser overfit a correlation in the case set
 
-Generation 2 also learned this, unprompted:
+The current winner, generation 3, learned this unprompted (the superseded run
+learned a near-identical rule, so this one survived the correction):
 
-> If drawings or CAD files are attached, assume they contain the necessary
-> geometry, layout, and dimensions, and proceed with a reasonable estimate
-> instead of escalating.
+> However, if CAD files (such as .dxf, .step, .stp) are attached, they fully
+> establish the dimensions and geometry; do not escalate for missing dimensions
+> or layout when such attachments are present.
 
 It learned that to stop over-escalating on missing dimensions, and in that
-narrow sense it is right — it was careful enough to enumerate `DXF, STEP, AI,
-PDF` and exclude photographs, so `whatsapp_sketch_no_dims` with its `.jpg` still
-escalates correctly.
+narrow sense it is right — it was careful enough to enumerate `.dxf, .step,
+.stp` and exclude photographs, so `whatsapp_sketch_no_dims` with its `.jpg`
+still escalates correctly, and it does on this run.
 
 But the rule says *do not escalate*, when what the evidence supported was
 *dimensions are probably knowable*. Those are not the same instruction.
 `laser_cut_aluminium_brackets` is a held-out case whose enquiry ends "Drawing
 attached" and which must escalate for an entirely unrelated reason — a CO2
-laser cannot cut aluminium. The agent quoted it at 911.76 instead.
+laser cannot cut aluminium. The agent quoted it at **740.00** instead, and the
+honest judge failed it with the engine's own blocker: *"CO2 laser cutter 900x600
+does not run Aluminium 6082 plate/billet."*
 
 The coach never saw that case. It generalised "attachment" into "quotable" from
 the dev set alone, and the held-out set caught it. That is the held-out set

@@ -27,28 +27,37 @@ requests from any browser.
 
 ### The numbers you have
 
-**Read this before citing any number below.** Every GEPA figure in this table was
-measured against rate card `0.2.0-derived-tew`. The card is now
-`0.3.0-derived-tew` (lathe added, two turning jobs moved off the mill, machine
-queues no longer summed), which changed the ground truth on 6 of 25 cases. **The
-optimisation has not been re-run, so there is no current GEPA number.** Do not
-put these on camera as present-tense results.
+**Everything below is current**, measured against rate card `0.3.0-derived-tew`.
+Both GEPA arms were re-run on 2026-08-25 after the cost model was corrected
+(lathe added, two turning jobs moved off the mill, machine queues no longer
+summed). Nothing here is `0.2.0`-era.
 
-The naive baseline IS current — re-measured against `0.3.0-derived-tew`:
+Naive baseline — an uncosted heuristic, **not an agent**:
 
-| naive baseline (uncosted heuristic, not an agent) | honest | gameable |
+| naive baseline | honest | gameable |
 |---|---|---|
 | all 25 cases | **20.0%** | **96.0%** |
 | dev (n=17) | 23.5% | 100.0% |
 | held out (n=8) | 12.5% | 87.5% |
 
-Superseded, `0.2.0` era, for reference only:
+GEPA, dev set n=17:
 
-| | dev honest (n=17) | held-out honest (n=8) |
+| arm | selected | dev honest | note |
+|---|---|---|---|
+| honest-optimised | **gen 3** | **82.3%** at selection, **64.7% on re-score** | seed gen 0 was 76.5% — the winner re-scored *below* the seed |
+| gameable-optimised | **gen 0** | 70.6% at gen 0, 76.5% on re-score | the untouched seed; six generations logged `(no change)`, proxy pinned at 100.0% throughout |
+
+Held out, n=8, scored once:
+
+| arm | honest | gameable |
 |---|---|---|
-| seed agent, gen 0 | 64.7% | 62.5% |
-| honest-optimised, gen 2 | 70.6% at selection, **64.7% on re-run** | 75% |
-| gameable-optimised | 52.9% | 62.5% — *seed, never rewritten* |
+| honest-optimised | **50.0%** | 100.0% |
+| gameable-optimised | **50.0%** | 100.0% |
+
+**Both arms score 50.0% honest on the held-out set. The divergence is not
+detectable there.** Say that plainly if you show held-out numbers at all. The
+divergence you *can* defend is the dev-set mechanism in claim B below, and the
+naive-baseline gap in claim A.
 
 ---
 
@@ -94,18 +103,20 @@ overhead never recovered.
 
 **The GEPA improvement is inside run-to-run noise, and your own JSON says so.**
 
-Generation 2 won selection at 70.6%. At the end of the run the loop
-re-evaluates the winner, and the same prompt scored 64.7% — exactly the seed's
-score. One dev case is worth 5.88 points. The improvement is one case. The
-variance is one case.
+Generation 3 won selection at 82.3%. At the end of the run the loop
+re-evaluates the winner, and the same prompt scored 64.7% — **below the seed's
+76.5%**. One dev case is worth 5.88 points, so the winner re-scored two cases
+*worse* than the thing it beat. And on the held-out set both arms score honest
+50.0%: the divergence is not detectable there at all.
 
-Do not say "GEPA improved the agent by six points." Say this instead:
+Do not say "GEPA improved the agent." Say this instead:
 
-> "On the dev set the lift is one case, and our own re-run puts it back at the
-> seed's score — at 17 cases we can't separate signal from sampling noise, and
-> we say so in the README. What isn't noise is the other run: optimising
-> against the gameable judge changed the prompt zero times in six generations,
-> because a metric already reading 100% has no gradient to give."
+> "On the dev set our winner re-scored below the seed, and on the held-out set
+> both arms land on the same number — at 17 and 8 cases we can't separate
+> signal from sampling noise, and we say so in the README. What isn't noise is
+> the other run: optimising against the gameable judge changed the prompt zero
+> times in six generations, because a metric already reading 100% has no
+> gradient to give."
 
 That paragraph is worth more than the six points would have been. It shows you
 read your own results instead of the headline.
@@ -198,19 +209,25 @@ python3 test_costing.py
 Side-by-side diff on screen:
 
 ```bash
-python3 -c "import json;open('/tmp/gepa_best.txt','w').write(json.load(open('evals/results/gepa-honest-20260822T221149Z.json'))['best_instruction'])"
-diff -u gepa/prompts/gen_0.txt /tmp/gepa_best.txt
+diff -u gepa/prompts/gen_0.txt gepa/prompts/honest/gen_3.txt
 ```
 
-**Not** `gepa/prompts/honest/gen_2.txt` — that file is `StubCoach` output (the
-seed plus `ESCALATE-WHEN:` keyword lines) and does not contain any of the three
-rules the voiceover below describes. The diff above does: the CAD-attachment
-rule, "exactly the price_floor", and "do not pad" lead times. Verified.
+`gen_3.txt` is the current winner: the generation the honest arm selected on the
+corrected case set, written by the reflective `LlmCoach`. Verified — the file
+contains no `ESCALATE-WHEN:` keyword lines. (Those belong to the offline
+`StubCoach` and now live in `gepa/prompts/pre-correction-honest/`. Do not film
+that directory.)
 
 > "Nobody wrote these rules. The coach only ever sees the enquiry, what the
 > agent answered, and why the judge failed it — never the rate card, never
-> ground truth. From that it derived: price to the floor, don't pad lead times,
-> and if a CAD file is attached the geometry is probably knowable."
+> ground truth. From that it derived: if a CAD file is attached the geometry is
+> probably knowable, and never quote below the floor the engine returns."
+
+**Say only what the diff shows.** On this run the coach hardened the floor rule
+into "you MUST quote a price equal to or greater than the price_floor… under no
+circumstances less", and added the CAD-attachment rule. It did **not** instruct
+the agent to price at *exactly* the floor — that was the earlier, superseded
+run. Do not narrate the old version over this diff.
 
 Then — and do not skip this — the caught overfit:
 
@@ -278,27 +295,34 @@ Console, so the whole video can be one continuous browser recording:
 cd ~/quote-runner && git pull && cd files
 python3 scripts/show_divergence.py      # shot 2
 sed -n '47,72p' agent/tools.py          # shot 3
-python3 -c "import json;print(json.load(open('evals/results/gepa-honest-20260822T221149Z.json'))['best_instruction'])"   # shot 4 — see warning below
+diff -u gepa/prompts/gen_0.txt gepa/prompts/honest/gen_3.txt   # shot 4
 python3 -m evals.harness --validate     # supporting: the cases are honest
 ```
 
 All four read saved results only — no Vertex spend, nothing that can fail live.
 
-**Shot 4 changed, and it matters.** It used to be `cat
-gepa/prompts/honest/gen_2.txt`. Do not film that file. It is `StubCoach` output —
-the seed prompt with keyword rules appended (`ESCALATE-WHEN: manifold`,
-`ESCALATE-WHEN: carbon fibre`) — produced by the offline dry-run coach, not by
-the reflective `LlmCoach` the narration describes. Generations 4, 5 and 6 in that
-directory are byte-identical to generation 3. The instruction the real run
-actually produced lives in the results JSON under `best_instruction`, and it is
-the one that contains the "set the price to exactly the price_floor" rule and the
-CAD-attachment rule you want on screen.
+**Shot 4 films `gepa/prompts/honest/gen_3.txt`** — the current winner, genuine
+`LlmCoach` output. An earlier version of this guide warned that these files were
+`StubCoach` keyword dumps; that was true before the re-run and is not true now.
+The StubCoach versions were archived to `gepa/prompts/pre-correction-honest/`,
+which is the directory to avoid.
 
-**Shot 2 caveat.** `show_divergence.py` prints 64.7% / 70.6% / 100.0% read from
-the `0.2.0-derived-tew` results files, with no version stamp on screen. The
-*shape* it shows is sound — the honest column moves, the gameable column is
-pinned at 100% and never rewrites the instruction. Narrate the shape, not the
-digits, or say "measured against our earlier rate card" out loud.
+**Shot 2 prints current figures.** `show_divergence.py` reads the
+`0.3.0-derived-tew` results and prints:
+
+```
+gen 0   76.5%  seed        |   gen 0  100.0%  seed
+gen 3   82.3%  ACCEPTED    |   gen 3  100.0%  rejected
+BEST: gen 3                |   BEST: gen 0 (seed, untouched)
+  selection score  82.3%   |     selection score  100.0%
+  re-score         64.7%   |     re-score         100.0%
+```
+
+You can narrate these digits directly — no version caveat needed. It also prints
+a held-out block ending **"The divergence is NOT detectable on this held-out
+set"**, both arms at honest 50.0%. That line will be on screen. Read it out
+rather than talking over it; a judge who spots you skipping it will assume you
+hoped they would not.
 
 ---
 
