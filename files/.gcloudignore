@@ -1,0 +1,57 @@
+# What `gcloud run deploy --source .` must NOT upload to Cloud Build.
+#
+# gcloud only auto-derives ignores from a .gitignore in the SOURCE directory.
+# The repo's .gitignore is one level up at the repo root, so from here gcloud
+# sees nothing and would upload every file in this directory. Hence this file.
+#
+# (.venv/ is at the repo root, outside this directory, so it is already out of
+# scope for this build and is listed below only as a guard against someone
+# creating one here later.)
+
+# --- python caches --------------------------------------------------------
+# The Dockerfile COPYs agent/, costing/ and evals/ wholesale, so without this
+# the local __pycache__ dirs ride along into the image. They hold .pyc files
+# compiled by the local interpreter (3.13) while the image is python:3.12-slim.
+# Python discards a mismatched cache and recompiles, so this is dead weight
+# rather than a correctness bug -- but it is still dead weight in the image.
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- virtual environments -------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+
+# --- eval artefacts -------------------------------------------------------
+# ~950K of historical run output. The deployed service imports evals.cases and
+# evals.harness (POST /eval needs them) but never reads these files -- it
+# scores in memory and returns JSON. The .gitkeep is deliberately NOT excluded,
+# so evals/results/ still exists in the image.
+evals/results/*.json
+
+# --- secrets --------------------------------------------------------------
+# Nothing matching these exists here; they mirror the repo's .gitignore so a
+# stray credential can never be uploaded to Cloud Build by accident.
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+client_secret*.json
+service-account*.json
+service_account*.json
+*-key.json
+application_default_credentials.json
+
+# --- editor / OS ----------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp

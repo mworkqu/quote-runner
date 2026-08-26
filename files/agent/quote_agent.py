@@ -13,6 +13,7 @@ import asyncio
 import json
 import os
 import re
+import time
 import uuid
 from typing import Any
 
@@ -106,6 +107,19 @@ class QuoteRunnerAgent:
 
         final = ""
         tool_calls: list[str] = []
+        # ADDITIVE, for the web UI's activity panel. `tool_calls` keeps its exact
+        # old meaning and remains what `priced_without_tool` is computed from;
+        # `tool_events` is a richer parallel record of the SAME events -- the
+        # arguments the model chose, the costing engine's verbatim reply, and
+        # real elapsed milliseconds. Nothing in the eval path reads it, and
+        # `QuoteUnderTest.from_agent_output` ignores keys it does not know.
+        tool_events: list[dict[str, Any]] = []
+        pending: dict[str, dict[str, Any]] = {}
+        t0 = time.monotonic()
+
+        def _elapsed_ms() -> int:
+            return int((time.monotonic() - t0) * 1000)
+
         async for event in self.runner.run_async(
             user_id=user_id,
             session_id=session.id,
@@ -113,8 +127,31 @@ class QuoteRunnerAgent:
         ):
             if event.content and event.content.parts:
                 for part in event.content.parts:
-                    if getattr(part, "function_call", None):
-                        tool_calls.append(part.function_call.name)
+                    if call := getattr(part, "function_call", None):
+                        tool_calls.append(call.name)
+                        record = {
+                            "name": call.name,
+                            "args": dict(call.args or {}),
+                            "response": None,
+                            "started_ms": _elapsed_ms(),
+                            "duration_ms": None,
+                        }
+                        tool_events.append(record)
+                        pending[call.id or f"{call.name}#{len(tool_events)}"] = record
+                    if response := getattr(part, "function_response", None):
+                        # Match on the call id ADK stamps on both halves; fall
+                        # back to the oldest unanswered call of the same name.
+                        record = pending.pop(response.id, None) or next(
+                            (
+                                r
+                                for r in tool_events
+                                if r["name"] == response.name and r["response"] is None
+                            ),
+                            None,
+                        )
+                        if record is not None:
+                            record["response"] = response.response
+                            record["duration_ms"] = _elapsed_ms() - record["started_ms"]
                     if getattr(part, "text", None) and event.is_final_response():
                         final += part.text
 
@@ -122,6 +159,8 @@ class QuoteRunnerAgent:
         result["tool_calls"] = tool_calls
         # An agent that quoted without ever costing the job got there by guessing.
         result["priced_without_tool"] = "price_job" not in tool_calls
+        result["tool_events"] = tool_events
+        result["elapsed_ms"] = _elapsed_ms()
         return result
 
     def quote(self, enquiry: str, attachments: list[str] | None = None) -> dict:

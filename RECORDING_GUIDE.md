@@ -12,18 +12,40 @@ is no code left to write before you record.
 | `evals/` — 25 cases, 8 held out, oracle + harness | done, oracle 100% |
 | `agent/` — ADK agent, tools, seed prompt | done |
 | `gepa/` — coach, loop, both judges | done, both real runs complete |
-| `server.py` — `/healthz`, `/quote`, `/eval` | deployed, revision `quote-runner-00001-wnf` live |
+| `server.py` — `/healthz`, `/quote`, `/eval` | deployed, revision `quote-runner-00004-v42` live |
+| `web_api.py` + `web/` — `/`, `/api/quote`, `/api/meta` | deployed, same revision |
 | `scripts/load_results.py`, `gepa_curve.sql` | done, dry-run verified |
 
-**The Cloud Run deploy is done.** Revision `quote-runner-00001-wnf` serves 100%
+**The Cloud Run deploy is done.** Revision `quote-runner-00004-v42` serves 100%
 of traffic in `us-central1` and answers real enquiries — that is your "runs on
-Google Cloud" evidence, already in hand.
+Google Cloud" evidence, already in hand. **The service is public**: the org
+policy that blocked `allUsers` was overridden at project scope and
+`roles/run.invoker` is now granted, so the URL below answers unauthenticated
+requests from any browser.
+
+    https://quote-runner-uzwr63rsia-uc.a.run.app
 
 ### The numbers you have
 
+**Read this before citing any number below.** Every GEPA figure in this table was
+measured against rate card `0.2.0-derived-tew`. The card is now
+`0.3.0-derived-tew` (lathe added, two turning jobs moved off the mill, machine
+queues no longer summed), which changed the ground truth on 6 of 25 cases. **The
+optimisation has not been re-run, so there is no current GEPA number.** Do not
+put these on camera as present-tense results.
+
+The naive baseline IS current — re-measured against `0.3.0-derived-tew`:
+
+| naive baseline (uncosted heuristic, not an agent) | honest | gameable |
+|---|---|---|
+| all 25 cases | **20.0%** | **96.0%** |
+| dev (n=17) | 23.5% | 100.0% |
+| held out (n=8) | 12.5% | 87.5% |
+
+Superseded, `0.2.0` era, for reference only:
+
 | | dev honest (n=17) | held-out honest (n=8) |
 |---|---|---|
-| naive baseline | 20% overall (96% gameable) | — |
 | seed agent, gen 0 | 64.7% | 62.5% |
 | honest-optimised, gen 2 | 70.6% at selection, **64.7% on re-run** | 75% |
 | gameable-optimised | 52.9% | 62.5% — *seed, never rewritten* |
@@ -35,9 +57,19 @@ Google Cloud" evidence, already in hand.
 Read this before you script anything. Your own results files contain a fact
 that will sink you if a judge finds it and you didn't mention it first.
 
-### Claims that are bulletproof — lead with these
+### Claims that hold up — lead with these
 
-**A. The naive baseline gap: honest 20%, gameable 96%.**
+**A. The naive baseline gap: honest 20.0%, gameable 96.0%** — current, measured
+against `0.3.0-derived-tew`.
+
+Say what the subject is. `naive_quote` is **not an agent**: it is an uncosted
+pricing heuristic — flat rate per unit, fixed minimum, always promises seven
+days, never escalates, never calls `price_job`. The claim is about the judge, not
+about an agent: a judge that rewards the shape of an answer passes a stub that
+never consulted the cost engine. Best single example on camera:
+`mill_manifold_oversize` passes the gameable judge at **QAR 250.00** on a part
+40mm past the mill's X axis. Never call this "the same agent" as the GEPA runs —
+different subject, different measurement.
 5 cases out of 25 versus 24 out of 25. A nineteen-case gap. Nothing about
 sampling noise touches this. This is your opening shot.
 
@@ -166,8 +198,14 @@ python3 test_costing.py
 Side-by-side diff on screen:
 
 ```bash
-diff -u gepa/prompts/gen_0.txt gepa/prompts/honest/gen_2.txt
+python3 -c "import json;open('/tmp/gepa_best.txt','w').write(json.load(open('evals/results/gepa-honest-20260822T221149Z.json'))['best_instruction'])"
+diff -u gepa/prompts/gen_0.txt /tmp/gepa_best.txt
 ```
+
+**Not** `gepa/prompts/honest/gen_2.txt` — that file is `StubCoach` output (the
+seed plus `ESCALATE-WHEN:` keyword lines) and does not contain any of the three
+rules the voiceover below describes. The diff above does: the CAD-attachment
+rule, "exactly the price_floor", and "do not pad" lead times. Verified.
 
 > "Nobody wrote these rules. The coach only ever sees the enquiry, what the
 > agent answered, and why the judge failed it — never the rate card, never
@@ -192,16 +230,18 @@ Then the honest headline, using the wording from Part 2.
 **Filmed entirely in the Cloud Console.** No local terminal, no curl, no live
 model call that can fail while you are recording.
 
-**Why this changed.** The service deployed and reports `Ready`, but the
-organisation enforces Domain Restricted Sharing
-(`constraints/iam.allowedPolicyMemberDomains`), so `allUsers` cannot be granted
-`roles/run.invoker` and the public URL refuses unauthenticated requests. That is
-an org policy, not a defect in the build — and the Console shows the same facts
-without the fight. Do not burn recording time on it.
+**Why the Console.** It shows revision, region, image digest and env vars in one
+frame, with no live model call that can stall mid-take. Shot 6 is where the
+service actually answers.
+
+(An earlier version of this guide said the service was private. Domain
+Restricted Sharing did block `allUsers` at first; the constraint was overridden
+at project scope and the binding now exists. Ignore anything you remember about
+proxies.)
 
 **Already done, nothing to run:**
 
-- deployed revision `quote-runner-00001-wnf`, region `us-central1`
+- deployed revision `quote-runner-00004-v42`, region `us-central1`, max 3 instances
 - env vars carry `GOOGLE_CLOUD_LOCATION=global`, because `gemini-3.5-flash` is
   served on the *global* publisher endpoint; a regional call 404s
 
@@ -219,11 +259,17 @@ without the fight. Do not burn recording time on it.
 > Cloud Run. The traffic on that metrics page *is* the optimisation run you just
 > watched — every generation, every case, billed to this project."
 
-**Check before you script it:** Cloud Trace is probably **empty**. Tracing only
-initialises inside `server.py` on Cloud Run, and no request ever reached that
-container; the GEPA runs ran locally and exported no spans. Open Cloud Trace
-first — if it is blank, leave it out. The Vertex AI metrics page carries this
-shot on its own.
+**Cloud Trace — neither empty nor what you'd hope.** Requests have now reached the
+container, so traces exist, but each one holds a single Cloud Run **ingress
+span** (`/api/quote`) and nothing else. The ADK tool calls do not appear, and
+spans are sampled — roughly one request in three produced an ingested trace when
+we measured it, so some quotes you film will have no trace at all. We granted
+`roles/cloudtrace.agent` and disabled CPU throttling; neither changed it.
+
+Film it only as "requests reaching Cloud Run". Do **not** narrate it as showing
+the agent's tool calls — the UI's activity panel is what shows those, and it is
+built from real ADK events. The Vertex AI metrics page carries this section on
+its own.
 
 **Shots 2–4 can be filmed in the same window.** Cloud Shell is part of the
 Console, so the whole video can be one continuous browser recording:
@@ -232,30 +278,116 @@ Console, so the whole video can be one continuous browser recording:
 cd ~/quote-runner && git pull && cd files
 python3 scripts/show_divergence.py      # shot 2
 sed -n '47,72p' agent/tools.py          # shot 3
-cat gepa/prompts/honest/gen_2.txt       # shot 4
+python3 -c "import json;print(json.load(open('evals/results/gepa-honest-20260822T221149Z.json'))['best_instruction'])"   # shot 4 — see warning below
 python3 -m evals.harness --validate     # supporting: the cases are honest
 ```
 
 All four read saved results only — no Vertex spend, nothing that can fail live.
+
+**Shot 4 changed, and it matters.** It used to be `cat
+gepa/prompts/honest/gen_2.txt`. Do not film that file. It is `StubCoach` output —
+the seed prompt with keyword rules appended (`ESCALATE-WHEN: manifold`,
+`ESCALATE-WHEN: carbon fibre`) — produced by the offline dry-run coach, not by
+the reflective `LlmCoach` the narration describes. Generations 4, 5 and 6 in that
+directory are byte-identical to generation 3. The instruction the real run
+actually produced lives in the results JSON under `best_instruction`, and it is
+the one that contains the "set the price to exactly the price_floor" rule and the
+CAD-attachment rule you want on screen.
+
+**Shot 2 caveat.** `show_divergence.py` prints 64.7% / 70.6% / 100.0% read from
+the `0.2.0-derived-tew` results files, with no version stamp on screen. The
+*shape* it shows is sound — the honest column moves, the gameable column is
+pinned at 100% and never rewrites the instruction. Narrate the shape, not the
+digits, or say "measured against our earlier rate card" out loud.
+
+---
+
+### Shot 6 — the agent doing the job (60s) ← **the one that shows the product**
+
+Everything before this is evidence about the build. This is the build working.
+
+**Open the public URL in a clean browser window:**
+
+    https://quote-runner-uzwr63rsia-uc.a.run.app
+
+No proxy, no terminal, no token. Verified unauthenticated: `/`, `/api/meta`,
+`/app.css` and `/app.js` all return 200 with no `Authorization` header, and a
+full quote renders end to end.
+
+Use an incognito window. It proves there is no cached session doing the work,
+and it keeps your bookmarks and other tabs out of frame.
+
+**Before you roll, two checks:**
+
+1. The header stamp reads **`quote-runner-00004-v42`**. If it says `local` you
+   are on a local server and the shot is worthless.
+2. **Run one quote and throw it away.** The first request after a quiet period
+   pays a Cloud Run cold start on top of the usual 15–40s. Clear it before the
+   camera is on, or your first take has a minute of dead air in it.
+
+**On camera, click the three examples in this order:**
+
+- **Turned brass part** — quotes. Let the activity checklist fill in, then land
+  on the total and the line beneath it: *Engine floor: QAR X · quoted +Y% above
+  floor*. That line is the architecture in one sentence.
+- **Exceeds machine envelope** — refuses. The reason is the engine's own blocker
+  text naming the axis and the overhang in millimetres. **There is no price
+  anywhere on the screen.** Say that out loud; it is the point.
+- **Missing dimensions** — refuses and asks for the dimensions.
+
+**The URL is now doing work for you.** `*.run.app` in the address bar is visible
+proof this is Cloud Run and not localhost, so you no longer have to explain
+anything. Show it once at the start and let it sit there.
+
+If you want the strongest version of this shot, put Logs Explorer beside the UI,
+filtered to the service, and click *Generate Quote*: about 18 seconds later the
+line appears — `POST /api/quote 200 18.2s quote-runner-00004-v42`. Cause and
+effect, in Google's own logs, while the viewer watches.
+
+```
+resource.type="cloud_run_revision"
+resource.labels.service_name="quote-runner"
+httpRequest.requestUrl:"/api/quote"
+```
+
+**If it fails mid-shoot**, the service caps at 3 instances and each quote is two
+Vertex round trips, so a stall is far more likely to be a cold start than a
+fault. Wait it out before you touch anything.
+
+**Fallback, if the URL misbehaves on the day.** `files/scripts/cr_proxy.py`
+reaches the service with an identity token and serves it at `localhost:8080`:
+
+```bash
+python3 files/scripts/cr_proxy.py "$(gcloud run services describe quote-runner --region us-central1 --format='value(status.url)')" 8080
+```
+
+Tested and working, but you should not need it now. Its token lasts about an
+hour; restart it rather than debugging the app.
 
 ---
 
 ## Part 4 — Your task list, in order
 
 1. **Clean the two directories** (commands in Part 3, before you start).
-2. **Deploy to Cloud Run — done.** Revision `quote-runner-00001-wnf` is live.
-   The public URL is blocked by org-level Domain Restricted Sharing; shot 5 uses
-   the Console instead and loses nothing. Do not reopen this.
+2. **Deploy to Cloud Run — done.** Revision `quote-runner-00004-v42` is live.
+   The org policy that blocked public access was overridden, `allUsers` now
+   holds `roles/run.invoker`, and the URL answers unauthenticated requests.
+   Shot 6 uses it directly.
 3. **Read the 15 newer eval cases.** You're the only person who can say whether
    a 210-minute PETG enclosure matches your machines. The oracle proves they're
    *consistent*, not that they're *real*.
 4. **Record shots 2, 3 and 4 first** — they need no cloud credentials and no
    network. If the deploy fights you, you still have three quarters of a video.
-5. **Record shot 5 last**, from the Console — no URL required.
-6. **Update the devpost.** The "Challenges" and "What we learned" sections
-   should now carry the noise finding and the caught overfit. Both are more
-   interesting than a clean win, and both are already written up in the README's
-   new *Known limitations* section — lift the text from there.
+5. **Record shot 5** from the Console — no URL required.
+6. **Record shot 6 last**, from the public URL in an incognito window, with one
+   throwaway quote already fired to clear the cold start. It is the only shot
+   that makes a live model call, so it goes last — after everything that cannot
+   fail is already in the can.
+7. **The devpost is already rewritten.** It now describes one LlmAgent with two
+   tools, the deterministic engine and the UI, carries the current
+   `0.3.0-derived-tew` naive baseline, and states plainly that there is no
+   current GEPA measurement. Read it once before you script the voiceover so
+   you do not narrate a claim it no longer makes.
 
 ## Part 5 — Questions a judge will ask
 
