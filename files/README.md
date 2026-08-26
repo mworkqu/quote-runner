@@ -23,6 +23,51 @@ python3 demo.py
 python3 test_costing.py
 ```
 
+## Reproducible testing
+
+```bash
+git clone https://github.com/mworkqu/quote-runner.git
+cd quote-runner/files
+```
+
+### No credentials, no install
+
+These three need only the Python standard library and this repository's own
+packages. No `pip install`, no Google Cloud account, no network access. Each
+finishes in under a second. Tested on Python 3.13 and 3.14.
+
+```bash
+python3 test_costing.py               # 16 golden tests: costing is deterministic, margin is on revenue, price_job has no price argument
+python3 -m evals.harness --validate   # an oracle plays all 25 cases from ground truth; 100% means the eval set is solvable, not that an agent is good
+python3 scripts/show_divergence.py    # re-prints both saved GEPA runs from evals/results/ — reads files only, calls nothing
+```
+
+### With Vertex credentials
+
+These call Gemini 3.5 Flash on Vertex AI. They need `GOOGLE_CLOUD_PROJECT`,
+`GOOGLE_CLOUD_LOCATION=global`, `GOOGLE_GENAI_USE_VERTEXAI=TRUE`, and
+`gcloud auth application-default login`.
+
+```bash
+python3 scripts/verify_vertex.py      # five preflight checks, a few seconds; run it first because it fails fast and names the reason
+python3 -m evals.harness --agent      # the real agent against the 17 dev cases; roughly 5-6 minutes, and it spends Vertex quota
+```
+
+`--agent` scores a live model, so your figures will not match any number
+printed in this README, and are not meant to. Run-to-run variance on an
+unchanged prompt is the central finding here, not a defect — see *Known
+limitations* below.
+
+### The hosted demo
+
+<https://quote-runner-uzwr63rsia-uc.a.run.app/> — public, no login, no API key.
+Enter an enquiry and the page shows the agent calling `list_capabilities` and
+`price_job`, with the returned cost breakdown and price floor.
+
+Revision `quote-runner-00005-9fr` serves 100% of traffic and was deployed from
+commit `86dd0be`. Every commit after it changes documentation only, so the
+running service and the code in this repository are the same source.
+
 ## The one design decision everything rests on
 
 The model estimates **physical quantities** — grams, machine minutes, parts per
