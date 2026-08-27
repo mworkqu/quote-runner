@@ -13,8 +13,27 @@ costing/
   feasibility.py    envelope / stock / lead time
   judge.py          honest_judge (conjunctive) + gameable_judge (deliberately broken)
   agent_tools.py    the ADK tool surface
+agent/
+  prompt.py         SEED instruction — the ONLY thing GEPA rewrites
+  tools.py          LLM-facing tool wrappers
+  quote_agent.py    ADK agent + harness adapter
+evals/
+  cases.py          25 cases, 8 held out
+  harness.py        oracle validation + eval runner
+  results/          JSON per run, ready for BigQuery
+gepa/
+  coach.py          the reflective coach that rewrites the instruction
+  loop.py           the optimisation loop, one judge per run
+  prompts/          gen_0.txt (= SEED) + one directory per judge
 scripts/
   derive_rate_card.py   the workshop cost model rate_card.json is generated from
+  verify_vertex.py      five-check Vertex preflight
+  show_divergence.py    re-prints both saved GEPA runs
+server.py           Cloud Run service — /healthz, /quote, /eval
+web_api.py          the browser-facing API — /, /api/quote, /api/meta
+web/                index.html, app.css, app.js — the public demo page
+Dockerfile          the container Cloud Run builds
+deploy.sh           one-command deploy to Cloud Run
 demo.py             four worked cases + the reward-hacking contrast
 test_costing.py     16 golden tests
 ```
@@ -159,15 +178,18 @@ crashing the trace.
 
 All 25 cases are authored and 8 are held out — see *Eval set* below. What is
 actually next is the judge. `honest_judge` is flat above the floor, and the
-optimiser read that indifference accurately: the GEPA generation-2 instruction
-tells the agent to set the price to *exactly* `price_floor` and the lead time to
-*exactly* `estimated_lead_days`, leaving no cushion for estimation error. That
-instruction is not what ships — `agent/prompt.py` is generation 0, nothing loads
-an optimised prompt at runtime, and the deployed agent quotes at or above the
-floor rather than on it. A judge
-that rewarded margin captured above the floor, rather than only clearing it, would
-produce a different agent — and would invalidate every number here, which is why
-it is next and not now.
+optimiser could read that indifference and sit on the floor. What no optimised
+prompt has ever done is *instruct* it to. Every generation carries the seed's own
+wording forward — "Otherwise quote at or above price_floor, and promise a lead
+time no shorter than estimated_lead_days" — and the current winner
+(`gepa/prompts/honest/gen_3.txt`) hardens it: "you MUST quote a price that is
+equal to or greater than the price_floor returned by the price_job() tool. Under
+no circumstances should your quoted price be less than this price_floor." The
+word *exactly* appears in no prompt file in this repository. Nor is any optimised
+prompt what ships: `agent/prompt.py` is generation 0, and nothing loads a
+rewritten prompt at runtime. A judge that rewarded margin captured above the
+floor, rather than only clearing it, would produce a different agent — and would
+invalidate every number here, which is why it is next and not now.
 
 ## Eval set
 
@@ -180,7 +202,7 @@ evals/
 
 ```bash
 python3 -m evals.harness --validate   # are the CASES well-authored?
-python3 -m evals.harness --naive      # baseline agent, day-4 footage
+python3 -m evals.harness --naive      # the vibes baseline the honest judge scores at 20%
 ```
 
 `--validate` runs an **oracle** that reads ground truth and plays perfectly. If

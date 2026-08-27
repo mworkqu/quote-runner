@@ -12,11 +12,11 @@ is no code left to write before you record.
 | `evals/` — 25 cases, 8 held out, oracle + harness | done, oracle 100% |
 | `agent/` — ADK agent, tools, seed prompt | done |
 | `gepa/` — coach, loop, both judges | done, both real runs complete |
-| `server.py` — `/healthz`, `/quote`, `/eval` | deployed, revision `quote-runner-00004-v42` live |
+| `server.py` — `/healthz`, `/quote`, `/eval` | deployed, revision `quote-runner-00005-9fr` live |
 | `web_api.py` + `web/` — `/`, `/api/quote`, `/api/meta` | deployed, same revision |
 | `scripts/load_results.py`, `gepa_curve.sql` | done, dry-run verified |
 
-**The Cloud Run deploy is done.** Revision `quote-runner-00004-v42` serves 100%
+**The Cloud Run deploy is done.** Revision `quote-runner-00005-9fr` serves 100%
 of traffic in `us-central1` and answers real enquiries — that is your "runs on
 Google Cloud" evidence, already in hand. **The service is public**: the org
 policy that blocked `allUsers` was overridden at project scope and
@@ -258,7 +258,7 @@ proxies.)
 
 **Already done, nothing to run:**
 
-- deployed revision `quote-runner-00004-v42`, region `us-central1`, max 3 instances
+- deployed revision `quote-runner-00005-9fr`, region `us-central1`, max 3 instances
 - env vars carry `GOOGLE_CLOUD_LOCATION=global`, because `gemini-3.5-flash` is
   served on the *global* publisher endpoint; a regional call 404s
 
@@ -343,7 +343,7 @@ and it keeps your bookmarks and other tabs out of frame.
 
 **Before you roll, two checks:**
 
-1. The header stamp reads **`quote-runner-00004-v42`**. If it says `local` you
+1. The header stamp reads **`quote-runner-00005-9fr`**. If it says `local` you
    are on a local server and the shot is worthless.
 2. **Run one quote and throw it away.** The first request after a quiet period
    pays a Cloud Run cold start on top of the usual 15–40s. Clear it before the
@@ -365,7 +365,7 @@ anything. Show it once at the start and let it sit there.
 
 If you want the strongest version of this shot, put Logs Explorer beside the UI,
 filtered to the service, and click *Generate Quote*: about 18 seconds later the
-line appears — `POST /api/quote 200 18.2s quote-runner-00004-v42`. Cause and
+line appears — `POST /api/quote 200 18.2s quote-runner-00005-9fr`. Cause and
 effect, in Google's own logs, while the viewer watches.
 
 ```
@@ -393,7 +393,7 @@ hour; restart it rather than debugging the app.
 ## Part 4 — Your task list, in order
 
 1. **Clean the two directories** (commands in Part 3, before you start).
-2. **Deploy to Cloud Run — done.** Revision `quote-runner-00004-v42` is live.
+2. **Deploy to Cloud Run — done.** Revision `quote-runner-00005-9fr` is live.
    The org policy that blocked public access was overridden, `allUsers` now
    holds `roles/run.invoker`, and the URL answers unauthenticated requests.
    Shot 6 uses it directly.
