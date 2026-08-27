@@ -359,21 +359,76 @@ argument is to claim more than your own results file does.
 
 ### 1. The dev-set lift is inside run-to-run noise
 
-The honest run selected generation 3 at a dev score of **82.3%**. At the end of
-the loop, `optimise()` re-evaluates the winning instruction one final time. The
-same prompt, on the same 17 cases, scored **64.7%** — not merely worse than its
-selection score, but **below the seed it was supposed to have beaten**.
+The honest run selected generation 3 at **82.35%**, and `optimise()` re-scored
+that same instruction at **64.71%** minutes later — below the seed it was
+supposed to have beaten. That alone would be enough to withdraw the claim. The
+prompt hashes make it worse, and more specific.
+
+**The six-generation lineage contains three distinct texts.** Hashing each
+generation's prompt file and putting it beside that generation's score:
 
 ```
-gen 0 (seed)     0.7647
-gen 3 (winner)   0.8235   <- score that won selection
-gen 3 re-run     0.6471   <- same prompt, minutes later
+gen  sha256[:10]   dev_honest  passed  decision
+0    6b98b351a9       0.7647    13/17  seed
+1    2990b36c00       0.7647    13/17  rejected
+2    2990b36c00       0.7059    12/17  rejected
+3    2990b36c00       0.8235    14/17  ACCEPTED
+4    7ab0c2b2d2       0.6471    11/17  rejected
+5    0fe7ffd240       0.5882    10/17  rejected
+6    0fe7ffd240       0.7059    12/17  rejected
 ```
 
-One dev case is worth 0.0588. The gap between selection and re-score is three
-cases; the gap between the winner and the seed it beat is two, in the wrong
-direction. **We cannot distinguish signal from sampling here**, and neither can
-six generations at n=17 against a stochastic model at non-zero temperature.
+Generations 1, 2 and 3 are byte-identical. So are 5 and 6. The archived copies
+are in the repository, so this is checkable:
+
+```bash
+cd gepa/prompts/archive-20260825-honest
+cmp gen_1.txt gen_3.txt   # exits 0, no output: byte-identical
+cmp gen_5.txt gen_6.txt   # exits 0, no output: byte-identical
+```
+
+**Generation 3 did not beat generations 1 and 2. It is generations 1 and 2.**
+The same bytes scored 13/17, then 12/17, then 14/17. Rejected twice, accepted on
+the third sample. The accepted improvement is a re-roll of an already-rejected
+prompt, not a better prompt.
+
+Counting the end-of-run re-score — which re-evaluates the winner, and the winner
+is that same text — those bytes were scored **four** times:
+
+```
+2990b36c00   13/17   0.7647   generation 1, rejected
+2990b36c00   12/17   0.7059   generation 2, rejected
+2990b36c00   14/17   0.8235   generation 3, ACCEPTED
+2990b36c00   11/17   0.6471   end-of-run re-score of the winner
+```
+
+Eleven to fourteen passes out of seventeen on bytes that never changed: a
+**three-case spread**, measured inside the run itself. Generations 5 and 6
+reproduce the effect independently — identical bytes, 10/17 and 12/17, two cases
+apart.
+
+**Nothing malfunctioned.** The coach proposes from the current *best*
+instruction. While best stayed at generation 0, it was handed the same parent and
+the same failure set three times, and returned the same text three times. That is
+the loop working exactly as written.
+
+The vulnerability is in the acceptance rule. It is strictly-greater-than against
+the current best, which has no defence against an identical candidate eventually
+sampling above the bar — given enough generations, an unchanged prompt will be
+accepted on variance alone. We have not changed the rule. Naming it is the
+finding.
+
+**Corroboration.** Separately, we scored the seed five times with the real agent
+against the same 17 cases, changing nothing between runs: **12, 12, 11, 12, 12**
+passes, a one-case spread. Two cases account for all of it —
+`mill_manifold_oversize` and `brass_spacers_no_deadline` — and in one run they
+moved in opposite directions and cancelled, so the aggregate score concealed
+churn the per-case results showed plainly. That experiment was deliberate and it
+is the weaker evidence. The lineage above was not deliberate, and it is larger.
+
+```bash
+python3 -m evals.harness --agent   # ~5-6 minutes, spends Vertex quota
+```
 
 The held-out set is worse for us, not better. Both arms — honest-optimised and
 gameable-optimised — score **honest 50.0%** on the 8 held-out cases. **The
@@ -384,9 +439,11 @@ What this does *not* undermine: the gameable run rewrote the instruction
 **zero times in six generations** (below). That result is structural, not
 statistical, and no amount of sampling noise produces it.
 
-The fix is more cases and repeated sampling per generation, not a better
-coach. 25 cases was the right call for a week; it is not enough to measure a
-five-point difference.
+The fix is more cases and repeated sampling per generation, not a better coach.
+25 cases was the right call for a week. It is not enough to resolve a difference
+of two or three cases, which is where the noise floor sits on this set — and a
+single sample per generation cannot tell an improved prompt from a lucky roll of
+an unchanged one.
 
 ### 2. The gameable judge cannot optimise, because it has nothing to optimise
 
