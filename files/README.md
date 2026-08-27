@@ -1,8 +1,9 @@
-# Quote Runner — cost model
+# Quote Runner
 
-Day 0 of the build. Everything downstream reads from here: the pricing tool the
-agent calls, the honest judge GEPA optimises against, and the gameable judge it
-gets contrasted with.
+A quoting agent for a fabrication workshop, and the cost model it is not allowed
+to argue with. Everything downstream reads from here: the pricing tool the agent
+calls, the honest judge GEPA optimises against, and the gameable judge it gets
+contrasted with.
 
 ```
 costing/
