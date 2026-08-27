@@ -427,6 +427,10 @@ than loosening it:
      shorter than estimated_lead_days returned by the tool.
 ```
 
+That file is not permanent — `gepa/prompts/<judge>/` is rewritten in place by
+every run, so `gepa/prompts/archive-20260825-honest/` holds a preserved copy of
+the 25 August honest lineage.
+
 **The superseded run's prompts are unrecoverable.** `gepa/prompts/` is written
 in place — one file per generation per judge — so the 22 August lineage was
 overwritten by later dry runs before anyone archived it. What sits in
