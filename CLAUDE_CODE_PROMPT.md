@@ -1,5 +1,12 @@
 # Quote Runner — Claude Code handoff
 
+> **Historical.** These are the build tasks exactly as they were issued, kept
+> as a record of how the project was assembled. Figures quoted inside them
+> were current when written and are not maintained — several are superseded,
+> including case counts, baseline scores and the rate card version. Nothing
+> here should be read as a claim about the system today. For that, read
+> `files/README.md`.
+
 Paste each task below into Claude Code as a **separate** prompt, in order.
 Task 0 is context — paste it once at the start of the session, then the numbered
 tasks one at a time. Do not paste them all at once; each ends with a check that

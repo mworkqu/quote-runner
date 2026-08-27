@@ -408,19 +408,45 @@ optimiser. It can remove the gradient entirely.
 the floor**: it is indifferent between a price at `price_floor` and one 50%
 above it, and between a lead time of 4 days and 8.
 
-**This section describes the superseded `0.2.0` run, and the re-run did not
-reproduce it.** There, generation 2 instructed the agent to price at *exactly*
-`price_floor` and to promise *exactly* `estimated_lead_days` with no padding —
-both clear the judge by definition, and both leave zero cushion in production,
-where the cushion is what absorbs estimation error. The current winner
-(`gepa/prompts/honest/gen_3.txt`) says instead: quote "equal to or greater than
-the price_floor… under no circumstances less", and promise "a lead time no
-shorter than estimated_lead_days". The word *exactly* does not appear in it.
+**An earlier version of this section said the optimiser instructed the agent to
+price at *exactly* `price_floor`. That was false**, and the word *exactly*
+appears in no prompt file in this repository. The seed says:
 
-So the flatness argument below still holds as an argument about the judge — a
-judge indifferent above the floor cannot penalise sitting on it — but we have
-observed the optimiser take that option **once**, not reliably. One run is not
-a behaviour.
+```
+   - Otherwise quote at or above price_floor, and promise a lead time no
+     shorter than estimated_lead_days.
+```
+
+and the current winner, `gepa/prompts/honest/gen_3.txt`, hardens that rather
+than loosening it:
+
+```
+   - Otherwise, you MUST quote a price that is equal to or greater than the
+     price_floor returned by the price_job() tool. Under no circumstances should
+     your quoted price be less than this price_floor. Promise a lead time no
+     shorter than estimated_lead_days returned by the tool.
+```
+
+**The superseded run's prompts are unrecoverable.** `gepa/prompts/` is written
+in place — one file per generation per judge — so the 22 August lineage was
+overwritten by later dry runs before anyone archived it. What sits in
+`gepa/prompts/pre-correction-honest/` is not that run. Each of those six files
+is `gen_0.txt` verbatim plus one to three appended `StubCoach` keyword lines; a
+normalised diff shows the appended lines are the only difference. This is the
+entirety of what "generation 2" contributed:
+
+```
+# gen 2: 1 enquiry(ies) were quoted but could not be delivered; escalate ones like this instead.
+ESCALATE-WHEN: carbon fibre
+```
+
+So every sentence this README once attributed to "generation 2" was either the
+seed's own wording or a stub keyword line, and no artifact survives against
+which the original claim could be checked.
+
+The flatness argument holds anyway, because it is an argument about the judge
+and not about any prompt: a judge indifferent above the floor cannot penalise
+sitting on it. What we cannot support is that an optimiser was ever told to.
 
 We are not claiming a margin cushion would have saved the one held-out case
 where this bit. On `acrylic_tags_500` the agent's *physical estimate* was about
@@ -434,17 +460,20 @@ it invalidates every number here, which is why it is next and not now.
 
 ### 4. The optimiser overfit a correlation in the case set
 
-The current winner, generation 3, learned this unprompted (the superseded run
-learned a near-identical rule, so this one survived the correction):
+The current winner, generation 3, learned this unprompted:
 
 > However, if CAD files (such as .dxf, .step, .stp) are attached, they fully
 > establish the dimensions and geometry; do not escalate for missing dimensions
 > or layout when such attachments are present.
 
 It learned that to stop over-escalating on missing dimensions, and in that
-narrow sense it is right — it was careful enough to enumerate `.dxf, .step,
-.stp` and exclude photographs, so `whatsapp_sketch_no_dims` with its `.jpg`
-still escalates correctly, and it does on this run.
+narrow sense it is right. The rule names three CAD extensions and nothing else —
+it says nothing about photographs either way. `whatsapp_sketch_no_dims`, whose
+attachment is a `.jpg`, does still escalate correctly on this run, but by
+omission from that list rather than by any exclusion the prompt states.
+
+Whether the superseded run learned the same rule is not knowable, for the reason
+given in limitation 3: its prompts no longer exist.
 
 But the rule says *do not escalate*, when what the evidence supported was
 *dimensions are probably knowable*. Those are not the same instruction.
