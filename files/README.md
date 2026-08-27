@@ -484,6 +484,11 @@ than loosening it:
      shorter than estimated_lead_days returned by the tool.
 ```
 
+That wording is not generation 3's own — `gen_1.txt`, `gen_2.txt` and
+`gen_3.txt` are byte-identical (sha256 `2990b36c00`), so it was proposed once
+and scored four times rather than authored by the winning generation; see
+limitation 1.
+
 That file is not permanent — `gepa/prompts/<judge>/` is rewritten in place by
 every run, so `gepa/prompts/archive-20260825-honest/` holds a preserved copy of
 the 25 August honest lineage.
