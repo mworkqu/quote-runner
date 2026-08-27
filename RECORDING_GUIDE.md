@@ -212,22 +212,41 @@ Side-by-side diff on screen:
 diff -u gepa/prompts/gen_0.txt gepa/prompts/honest/gen_3.txt
 ```
 
-`gen_3.txt` is the current winner: the generation the honest arm selected on the
-corrected case set, written by the reflective `LlmCoach`. Verified — the file
+`gen_3.txt` is the instruction the honest arm selected on the corrected case
+set, written by the reflective `LlmCoach`. It is not generation 3's own text —
+`gen_1.txt`, `gen_2.txt` and `gen_3.txt` are byte-identical (sha256
+`2990b36c00`), so it was proposed once and scored four times. Verified — the file
 contains no `ESCALATE-WHEN:` keyword lines. (Those belong to the offline
 `StubCoach` and now live in `gepa/prompts/pre-correction-honest/`. Do not film
 that directory.)
 
-> "Nobody wrote these rules. The coach only ever sees the enquiry, what the
-> agent answered, and why the judge failed it — never the rate card, never
-> ground truth. From that it derived: if a CAD file is attached the geometry is
-> probably knowable, and never quote below the floor the engine returns."
+> "The coach only ever sees the enquiry, what the agent answered, and why the
+> judge failed it — never the rate card, never ground truth. From that it wrote
+> a rule nobody gave it: if a CAD file is attached, the geometry is probably
+> knowable. And it took the floor rule the seed already had — 'quote at or above
+> price_floor' — and hardened it to 'you MUST quote a price that is equal to or
+> greater than the price_floor'."
 
-**Say only what the diff shows.** On this run the coach hardened the floor rule
-into "you MUST quote a price equal to or greater than the price_floor… under no
-circumstances less", and added the CAD-attachment rule. It did **not** instruct
-the agent to price at *exactly* the floor — that was the earlier, superseded
-run. Do not narrate the old version over this diff.
+**Say only what the diff shows.** The coach added the CAD-attachment rule, and
+hardened a floor rule the seed already carried. Seed:
+
+```
+   - Otherwise quote at or above price_floor, and promise a lead time no
+     shorter than estimated_lead_days.
+```
+
+`gen_3.txt`:
+
+```
+   - Otherwise, you MUST quote a price that is equal to or greater than the
+     price_floor returned by the price_job() tool. Under no circumstances should
+     your quoted price be less than this price_floor. Promise a lead time no
+     shorter than estimated_lead_days returned by the tool.
+```
+
+The word *exactly* appears in no prompt file in this repository. Do not narrate
+the optimiser telling the agent to price *at* the floor — no surviving prompt
+says it, in this run or the superseded one.
 
 Then — and do not skip this — the caught overfit:
 
